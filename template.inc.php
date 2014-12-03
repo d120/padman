@@ -1,3 +1,4 @@
+<?php if (!defined("SELF_URL")) die("Please don't call directly..."); ?>
 <!DOCTYPE html>
 <html lang="de">
   <head>
@@ -76,69 +77,152 @@ foreach ($groupmap as $name => $id) {
 
 </div>
 
-   <ul class="list-group">
-
-<?php
-
-
-$pads = $instance->listPads($groupmap[$group]);
-$pad_lastedited = Array();
-foreach ($pads->padIDs as $padID) {
-	$tmp = $instance->getLastEdited($padID);
-	$pad_lastedited[$padID] = (int)$tmp->lastEdited/1000;
-}
-
-asort($pad_lastedited);
-$pad_lastedited = array_reverse($pad_lastedited);
-
-foreach ($pad_lastedited as $padID => $last_edited) {
-	$tmp = $instance->getPublicStatus($padID);
-
-	$shortname = substr($padID,strpos($padID, "$")+1);
-	$icon_html = "";
-	if ($tmp->publicStatus) {
-		$icon_html = '<span class="glyphicon glyphicon-globe"></span> ';
-	}
-	else{
-		$icon_html = '<span class="glyphicon glyphicon-home"></span> ';
-	}
-	echo '<li class="list-group-item" data-padID="'.$padID.'"> 
-		<!-- Single button -->
-		<div class="btn-group">
-		  <button type="button" class="btn btn-link dropdown-toggle btn-xs" data-toggle="dropdown">
-		    '.$icon_html.'<span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu" role="menu">
-		    <li><a href="'. SELF_URL .'?group='.$group.'&public_pad='.$padID.'">Öffentlich machen</a></li>
-		    <li><a href="'. SELF_URL .'?group='.$group.'&nonpublic_pad='.$padID.'">Nicht-öffentlich machen</a></li>
-		    <li><a href="#" class="setpassw">Passwort setzen</a></li>
-		    <li><a href="'. SELF_URL .'?group='.$group.'&setpassw_pad='.$padID.'&passw=">Passwort aus</a></li>
-			<li><a href="#" class="delpad">Löschen</a></li>
-		  </ul>
-		</div>
-        <a href="'.SELF_URL.'?redirect='.$padID.'">'.$shortname.'</a>
-		<span class="badge">'.date("d.m.y H:i",$last_edited).'</span></li>';
-
-}
-
-?>
+   <ul class="list-group" id="pad_list">
+     Eile mit Weile ...
    </ul>
 </div>
 
 </div>
+
+<div class="modal fade" id="modal_options">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Pad options</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <p>Zugangsbeschränkung</p>
+          <p><button class="btn btn-primary" id="access_private"><i class="glyphicon glyphicon-lock"></i> nur mit FS-Account</button>
+            <button class="btn btn-default" id="access_public"><i class="glyphicon glyphicon-globe"></i> öffentlich</button>
+          </p>
+        </div>
+        
+        <div class="form-group">
+          <p>Shortlink</p>
+          <p><input type="text" class="form-control" readonly id="pad_shortlink" value="(nur für öffentliche Pads verfügbar)"></p>
+        </div>
+        
+        <div class="form-group form-inline ">
+          <p>Passwort</p>
+        
+          <input type="text" id="pad_passw" class="form-control input-lgxx" style="width:200px;"> 
+            <button class="btn btn-success btn-lgxx" id="passw_store" title="Passwort übernehmen"><i class="glyphicon glyphicon-ok"></i></button>
+            <button class="btn btn-default btn-lgxx" id="passw_clear" title="Passwortschutz ausschalten">aus</button>
+        </div>
+        
+        
+        <div class="form-group form-inline " id="delete_dlg" style="display: none">
+          <p>Pad löschen</p>
+        
+          <input type="text" placeholder="Löschpasswort eingeben" id="delete_password" class="form-control input-lgxx" style="width:200px;"> 
+            <button class="btn btn-danger" id="delete_yes">ja, wirklich löschen</button>
+        </div>
+        
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        <button type="button" class="btn btn-default pull-left" id="delete_pad"><i class="glyphicon glyphicon-trash"></i> Löschen</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 
 <script>
-$(".setpassw").click(function() {
-	var padID=$(this).closest("[data-padID]").attr("data-padID");
-	var random = ("00000"+Math.floor(Math.random()*100000));
-	random = random.substr(random.length-5);
-	var passw = prompt("Setze Passwort für Pad "+padID, random);
-	if (passw) location = "<?= SELF_URL?>?group=<?=$group?>&setpassw_pad=" + padID + "&passw=" + passw;
-});
+    var self_url = <?= json_encode(SELF_URL) ?>, group = <?= json_encode($group) ?>;
+    
+    var currentEditPadID;
+    $(document).on('click', ".pad_opts", function(e) {
+      //alert(1)
+      var $dlg = $("#modal_options");
+      var $line = $(e.target).closest("[data-padID]");
+      currentEditPadID = $line.attr("data-padID");
+      var is_public = $line.attr("data-public");
+      
+      setAccessPublicToggle(is_public == "true");
+      if (is_public)
+        $("#pad_shortlink").val($line.attr("data-shortlnk"));
+      else
+        $("#pad_shortlink").val("(nur für öffentliche Pads verfügbar)");
+      $("#pad_passw").val($line.attr("data-passw"));
+      
+      $("#delete_dlg").hide();
+      $dlg.modal("show");
+    })
+    
+    function setAccessPublicToggle(value) {
+      $("#access_private").toggleClass("btn-primary", !value);
+      $("#access_private").toggleClass("btn-default", value);
+      
+      $("#access_public").toggleClass("btn-primary", value);
+      $("#access_public").toggleClass("btn-default", !value);
+    }
+    
+    $("#passw_store").click(function() {
+    	if (!$("#pad_passw").val()) {
+    	  var random = ("00000"+Math.floor(Math.random()*100000));
+    	  random = random.substr(random.length-5);
+        $("#pad_passw").val(random);
+      }
+      savePassword();
+    });
+    
+    $("#passw_clear").click(function() {
+      $("#pad_passw").val("");
+      savePassword();
+    })
+    
+    function savePassword() {
+      $.post(self_url, { "pad_id" : currentEditPadID, "set_passw" : $("#pad_passw").val() },
+      function(data) {
+        loadPadList();
+      }, "json");
+    }
+    
+    $("#access_public").click(function() {
+      setAccessPublicToggle(true);
+      setPadPublic("true");
+    });
+    
+    $("#access_private").click(function() {
+      setAccessPublicToggle(false);
+      setPadPublic("false");
+    });
+    
+    function setPadPublic(value) {
+      $.post(self_url, { "pad_id" : currentEditPadID, "set_public" : value },
+      function(data) {
+        loadPadList();
+      }, "json");
+    }
+    
+    $("#delete_pad").click(function() {
+      $("#delete_dlg").slideDown();$("#delete_password").val("");
+    })
+    $("#delete_yes").click(function() {
+      $.post(self_url, { "pad_id" : currentEditPadID, "delete_this_pad" : $("#delete_password").val() },
+      function(data) {
+        loadPadList();
+      }, "json");
+    })
+    
+    
+    function loadPadList() {
+      $("#pad_list").html("<div class='loader'></div>");
+      $.get(self_url + "?group=" + group + "&list_pads=1", function(result) {
+        $("#pad_list").html(result);
+      }, "html");
+    }
+
+    loadPadList();
+
 </script>
 
 

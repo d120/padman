@@ -11,13 +11,19 @@ $infoBox = "";
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
 	$url = $_SERVER["REDIRECT_SCRIPT_URL"];
 	if (preg_match('#^/pad/(.*)$#', $url, $res) && array_search($res[1], $shown_groups) !== FALSE) {
+    header("HTTP/1.1 200 OK");
 		$_GET["group"] = $res[1];
 	} elseif (preg_match('#^/pad/p/(Sitzung.*)$#', $url, $res)) {
 		$padID = $res[1];
-		$_GET["redirect"] = 'g.UcY0Rd8jOCxWgyBK$' . $padID;
+		header("Location: ".SELF_URL."?group=sitzung&show=$padID");
 	} elseif (preg_match('#^/pad/p/(.*)$#', $url, $res)) {
 		$padID = $res[1];
-		$_GET["redirect"] = 'g.UzYcuI1Dd9d3FOLJ$' . $padID;
+    header("Location: ".SELF_URL."?group=fachschaft&show=$padID");
+    exit;
+	} elseif (preg_match('#^/pad/(.*)/(.*)$#', $url, $res) && array_search($res[1], $shown_groups) !== FALSE) {
+		header("HTTP/1.1 200 OK");
+    $_GET["group"] = $res[1];
+    $_GET["show"] = $res[2];
 	} else {
 		header("HTTP/1.1 404 Not Found");
 		echo "<h3>File not found</h3>";
@@ -25,7 +31,25 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
 	}
 }
 
+function storeJson($filename, $key, $value) {
+	$p=@json_decode(file_get_contents('./data/'.$filename.'.json'),true);
+  if (!is_array($p)) $p=array();
+  $p[$key] = $value;
+  file_put_contents('./data/'.$filename.'.json', json_encode($p));
+}
 
+function readJson($filename, $key) {
+	$p=@json_decode(file_get_contents('./data/'.$filename.'.json'),true);
+  if (!is_array($p)) $p=array();
+  return isset($p[$key]) ? $p[$key] : '';
+}
+
+function setPassword($padID, $passwd) {
+  global $instance;
+	$ok=$instance->setPassword($padID, $passwd);
+	storeJson('passwords', $padID, $passwd);
+  return $ok;
+}
 
 $padurl = PAD_URL;
 
@@ -67,37 +91,73 @@ foreach ($author_groups as $group_name) {
 setcookie('sessionID', implode(",",$sessions), $validUntil, '/', HOST_NAME);
 
 
-if (isset($_GET['redirect'])) {
-	$padname = urlencode($_GET['redirect']);
+if (isset($_GET['show'])) {
+	$padname = htmlspecialchars($_GET['show']);
 	//header("Location: ".$padurl.$padname); #+$padurl+$padname);
-	echo "<style> html,body {margin:0;padding:0;} iframe { width: 100%; height: 100%; border: 0; } </style>\n";
-	echo '<iframe src="'.$padurl.$padname.'"></iframe>';
+  $passw = readJson('passwords', $groupmap[$group].'$'.$padname);
+  if ($passw) $passw = "<br><b>Passwort: $passw</b>";
+	echo "<style> html,body {margin:0;padding:0;} iframe { width: 100%; height: 100%; border: 0; } #info {position:absolute;bottom:0;left:50%;margin-left:-210px;width:400px;padding:10px;border:1px solid #393;background:#afa;font:status-bar;}</style>\n";
+  echo "<div id='info'>Pad: ".$padurl.$groupmap[$group].'$'.$padname."$passw</div>";
+	echo '<iframe src="'.$padurl.$groupmap[$group].'$'.$padname.'"></iframe>';
 	exit;
 }
 
-if (isset($_GET['makepublic'])) {
-	$padname = urldecode($_GET['makepublic']);
-	//echo "Padname: ". $padname;
-	$instance->setPublicStatus($padname, True);
+// JSON API
+if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
+	$padname = $_POST['pad_id'];
+  $public = $_POST['set_public'] == 'true';
+	$ok=$instance->setPublicStatus($padname, $public);
+  $sl=$public ? substr(md5($padname),0,7) : null;
+  storeJson('shortlnk', $padname, $sl);
+  die(json_encode(array("status"=>"ok","shortlnk"=>$sl)));
 }
-if (isset($_GET['public_pad'])) {
-	$padname = urldecode($_GET['public_pad']);
-	//echo "Group: $group Padname: ". $padname;
-	$instance->setPublicStatus($padname, True);
+if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
+	$padname = $_POST['pad_id'];
+	$ok=setPassword($padname, $_POST['set_passw']);
+  die(json_encode(array("status"=>"ok")));
 }
+if (isset($_POST['delete_this_pad']) && isset($_POST['pad_id'])) {
+  if (defined('DELETE_PASSWORD') && strlen(DELETE_PASSWORD) > 0 && DELETE_PASSWORD != $_POST['delete_this_pad'])
+      die(json_encode(array("status"=>"access_denied")));
+	$padname = $_POST['pad_id'];
+	$ok=$instance->deletePad($padname);
+  die(json_encode(array("status"=>"ok")));
+}
+if (isset($_GET['list_pads'])) {
+  $pads = $instance->listPads($groupmap[$group]);
+  $pad_lastedited = Array();
+  foreach ($pads->padIDs as $padID) {
+  	$tmp = $instance->getLastEdited($padID);
+  	$pad_lastedited[$padID] = (int)$tmp->lastEdited/1000;
+  }
 
-if (isset($_GET['nonpublic_pad'])) {
-	$padname = urldecode($_GET['nonpublic_pad']);
-	//echo "Padname: ". $padname;
-	$instance->setPublicStatus($padname, False);
-}
+  asort($pad_lastedited);
+  $pad_lastedited = array_reverse($pad_lastedited);
 
-if (isset($_GET['setpassw_pad'])) {
-	$padname = urldecode($_GET['setpassw_pad']);
-	//echo "Padname: ". $padname;
-	$instance->setPassword($padname, $_GET['passw']);
-}
+  foreach ($pad_lastedited as $padID => $last_edited) {
+  	$tmp = $instance->getPublicStatus($padID);
 
+  	$shortname = substr($padID,strpos($padID, "$")+1);
+  	$icon_html = "";
+  	if ($tmp->publicStatus) {
+  		$icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true";
+  	}
+  	else{
+  		$icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false";
+  	}
+    $passw = readJson('passwords', $padID);
+    $shortlnk = readJson('shortlnk', $padID);
+    if ($shortlnk) $shortlnk = SHORTLNK_PREFIX.$shortlnk;
+    
+    echo '<li class="list-group-item" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
+  	  <button type="button" class="btn btn-link btn-xs pad_opts">
+  	    '.$icon_html.'
+  	  </button>
+      <a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'">'.$shortname.'</a>
+      <span class="badge">'.date("d.m.y H:i",$last_edited).'</span></li>';
+  }
+  die();
+}
 
 if (isset($_POST['createPadinGroup'])) {
 	
@@ -105,7 +165,7 @@ if (isset($_POST['createPadinGroup'])) {
 		$padname = 'xxxSitzung' . date('Ymd');
 		$passwd = mt_rand(10000, 99999);
 		$starttext = file_get_contents('template-sitzung.txt');
-		$starttext = "Kurzlink zum Pad: http://d120.de/p/$padname\nPasswort: $passwd\n\n" . $starttext;
+		$starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
 	} else {
     $padname = $_POST['pad_name'];
 		$starttext = "Willkommen im wesentlichen Etherpad auf D120.de!\r\n\r\n";
@@ -114,11 +174,12 @@ if (isset($_POST['createPadinGroup'])) {
 	try {
 		$instance->createGroupPad($groupmap[$group], $padname, $starttext);
 		if ($_POST['start_sitzung']) {
+      storeJson('shortlnk', $groupmap[$group] . '$' . $padname, 'si'.date('md'));
 			$instance->setPublicStatus($groupmap[$group] . '$' . $padname, true);
 			$instance->setPassword($groupmap[$group] . '$' . $padname, $passwd);
 			file_put_contents('./passwords/' . $groupmap[$group] . '$' . $padname . '.txt', $passwd);
 		}
-		$infoBox .= "<div class='alert alert-success'>Pad ".$padname." in Gruppe ".$group.' erstellt. <a href="'.SELF_URL.'?redirect='.$groupmap[$group].'$'.$padname.'">Direkt zum Pad</a><br><br><h3>Passwort: '.$passwd.'</h3></div>\n';
+		$infoBox .= "<div class='alert alert-success'>Pad ".$padname." in Gruppe ".$group.' erstellt. <a href="'.SELF_URL.'?show='.$groupmap[$group].'$'.$padname.'">Direkt zum Pad</a><br><br><h3>Passwort: '.$passwd.'</h3></div>\n';
 	} catch (Exception $e) {
 		$infoBox .= "<div class='alert alert-danger'>Fehler beim Erstellen des Pads: ".$e->getMessage()."</a></div>\n";
 
