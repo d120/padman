@@ -153,6 +153,10 @@ foreach ($groupmap as $name => $id) {
         $("#pad_shortlink").val("(nur für öffentliche Pads verfügbar)");
       $("#pad_passw").val($line.attr("data-passw"));
       
+      var shortName = currentEditPadID.substr(currentEditPadID.indexOf("$")+1);
+      $dlg.find(".modal-title").html("Einstellungen zum Pad <b><u>"+shortName+"</u></b>");
+      $dlg.find("#delete_dlg p").text("Pad "+shortName+" wirklich endgültig löschen?");
+      
       $("#delete_dlg").hide();
       $dlg.modal("show");
     })
@@ -214,6 +218,7 @@ foreach ($groupmap as $name => $id) {
       $.post(self_url, { "pad_id" : currentEditPadID, "delete_this_pad" : $("#delete_password").val() },
       function(data) {
         loadPadList();
+        $("#modal_options").modal("hide");
       }, "json");
     })
     
