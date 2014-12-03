@@ -1,0 +1,16 @@
+<?php
+
+define("HOST_NAME", "www.example.com");
+define("PAD_URL", "https://www.example.com/etherpad/p/");
+define("SELF_URL", "/pad/");
+
+// insert here the contents of APIKEY.txt from your etherpad-lite directory
+define("API_KEY", '');
+// insert here the url to the etherpad-lite api endpoint
+define("API_URL", 'http://127.0.0.1:9001/api');
+
+// modify the categories shown on the page
+$shown_groups = array("category1", "category2");
+
+
+
