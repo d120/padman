@@ -62,14 +62,14 @@ foreach ($groupmap as $name => $id) {
 
 <div class="panel panel-default">
   <div class="panel-heading">Vorhandene Pads für Gruppe: <b><code><?=$group?></code></b>
-		 <form class="pull-right form-inline" style="margin-top:-5px" action="<?=SELF_URL?>?group=<?=$group?>" method="POST">
+		 <form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$group?>" method="POST">
 		<div class="form-group-sm">
 		     <input type="text" class="form-control" placeholder="neues Pad in <?=$group?>" name="pad_name">
 		   <button type="submit" class="btn btn-sm <?= ($group == "sitzung" ? "btn-default" : "btn-success") ?>" name="createPadinGroup">Pad erstellen</button>
 		</div>
 		 </form>
 <?php if ($group == "sitzung"): ?>
-		<form class="pull-right form-inline" style="margin-top:-5px; padding-right: 20px;" action="<?=SELF_URL?>?group=<?=$group?>" method="POST">
+		<form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$group?>" method="POST">
 		<input type="hidden" name="start_sitzung" value="true">
 		<button type="submit" class="btn btn-sm btn-success" name="createPadinGroup">Sitzung starten</button>
 		</form>

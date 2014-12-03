@@ -96,8 +96,18 @@ if (isset($_GET['show'])) {
 	//header("Location: ".$padurl.$padname); #+$padurl+$padname);
   $passw = readJson('passwords', $groupmap[$group].'$'.$padname);
   if ($passw) $passw = "<br><b>Passwort: $passw</b>";
-	echo "<style> html,body {margin:0;padding:0;} iframe { width: 100%; height: 100%; border: 0; } #info {position:absolute;bottom:0;left:50%;margin-left:-210px;width:400px;padding:10px;border:1px solid #393;background:#afa;font:status-bar;}</style>\n";
-  echo "<div id='info'>Pad: ".$padurl.$groupmap[$group].'$'.$padname."$passw</div>";
+  $shortlnk = readJson('shortlnk', $groupmap[$group].'$'.$padname);
+  if ($shortlnk) $shortlnk = "<br><b>Kurz-Link: <a href='".SHORTLNK_PREFIX."$shortlnk'>".SHORTLNK_PREFIX."$shortlnk</a></b>";
+	echo "<style> 
+  html,body {margin:0;padding:0;} 
+  iframe { width: 100%; height: 100%; border: 0; } 
+  #info b {font-size:150%;}  
+  #info {position:absolute;bottom:0;left:50%;margin-left:-210px;width:400px;padding:5px 10px;
+    border:1px solid #393;background:#afa;font:status-bar;}
+  </style>
+  <div id='info' ondblclick='if(this.style.height==\"0px\")this.style.height=\"inherit\";else this.style.height=\"0px\";'>
+  (Doppelklick zum ein/ausblenden)<br>
+  Pad: ".$padurl.$groupmap[$group].'$'.$padname."$passw$shortlnk</div>";
 	echo '<iframe src="'.$padurl.$groupmap[$group].'$'.$padname.'"></iframe>';
 	exit;
 }
@@ -133,29 +143,34 @@ if (isset($_GET['list_pads'])) {
 
   asort($pad_lastedited);
   $pad_lastedited = array_reverse($pad_lastedited);
-
+  echo '<div class="table-responsive"><table class="table">';
+  echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th></tr></thead><tbody>';
   foreach ($pad_lastedited as $padID => $last_edited) {
   	$tmp = $instance->getPublicStatus($padID);
 
   	$shortname = substr($padID,strpos($padID, "$")+1);
-  	$icon_html = "";
+  	$icon_html = ""; $className = "";
   	if ($tmp->publicStatus) {
-  		$icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true";
-  	}
-  	else{
+  		$icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $className="";
+  	} else{
   		$icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false";
   	}
     $passw = readJson('passwords', $padID);
     $shortlnk = readJson('shortlnk', $padID);
     if ($shortlnk) $shortlnk = SHORTLNK_PREFIX.$shortlnk;
     
-    echo '<li class="list-group-item" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
-  	  <button type="button" class="btn btn-link btn-xs pad_opts">
+    echo '<tr class="'.$className.'" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
+  	  <td class="icon"><button type="button" class="btn btn-link btn-xs pad_opts">
   	    '.$icon_html.'
-  	  </button>
-      <a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'">'.$shortname.'</a>
-      <span class="badge">'.date("d.m.y H:i",$last_edited).'</span></li>';
+  	  </button></td>
+      <td class="name"><a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'">'.$shortname.'</a></td><td>';
+    if ($passw) echo ' <code>'.$passw.'</code>';
+    echo ' <span class="pull-right"> ';
+    if ($public=="true") echo '<span class="label label-success ">Öffentlich</span> ';
+    echo '<span class="label label-default ">'.date("d.m.y H:i",$last_edited).'</span> ';
+    echo '</span></td></tr>';
   }
+  echo "</tbody></table></div>";
   die();
 }
 
