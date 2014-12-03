@@ -8,6 +8,11 @@ include "etherpad-lite-client.php";
 
 $infoBox = "";
 
+if ($_SERVER["HTTP_HOST"] != HOST_NAME) {
+  header("Location: https://".HOST_NAME.$_SERVER["REQUEST_URI"]);
+  exit;
+}
+
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
 	$url = $_SERVER["REDIRECT_SCRIPT_URL"];
 	if (preg_match('#^/pad/(.*)$#', $url, $res) && array_search($res[1], $shown_groups) !== FALSE) {
@@ -177,9 +182,10 @@ if (isset($_GET['list_pads'])) {
 if (isset($_POST['createPadinGroup'])) {
 	
 	if (isset($_POST['start_sitzung'])) {
-		$padname = 'xxxSitzung' . date('Ymd');
+		$padname = 'Sitzung' . date('Ymd');
 		$passwd = mt_rand(10000, 99999);
 		$starttext = file_get_contents('template-sitzung.txt');
+    $starttext = str_replace("{{heute}}", date("r"), $starttext);
 		$starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
 	} else {
     $padname = $_POST['pad_name'];
@@ -191,10 +197,10 @@ if (isset($_POST['createPadinGroup'])) {
 		if ($_POST['start_sitzung']) {
       storeJson('shortlnk', $groupmap[$group] . '$' . $padname, 'si'.date('md'));
 			$instance->setPublicStatus($groupmap[$group] . '$' . $padname, true);
-			$instance->setPassword($groupmap[$group] . '$' . $padname, $passwd);
-			file_put_contents('./passwords/' . $groupmap[$group] . '$' . $padname . '.txt', $passwd);
+			setPassword($groupmap[$group] . '$' . $padname, $passwd);
+			
 		}
-		$infoBox .= "<div class='alert alert-success'>Pad ".$padname." in Gruppe ".$group.' erstellt. <a href="'.SELF_URL.'?show='.$groupmap[$group].'$'.$padname.'">Direkt zum Pad</a><br><br><h3>Passwort: '.$passwd.'</h3></div>\n';
+		$infoBox .= "<div class='alert alert-success'>Pad ".$padname." in Gruppe ".$group.' erstellt. <a href="'.SELF_URL.'?group='.$group.'&show='.$padname.'">Direkt zum Pad</a><br><br><h3>Passwort: '.$passwd.'</h3></div>';
 	} catch (Exception $e) {
 		$infoBox .= "<div class='alert alert-danger'>Fehler beim Erstellen des Pads: ".$e->getMessage()."</a></div>\n";
 

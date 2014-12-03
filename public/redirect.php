@@ -9,7 +9,9 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     $p = json_decode(file_get_contents("../data/shortlnk.json"), true);
     foreach($p as $k=>$v) {
       if ($v == $res[1]) {
-        header("Location: ".PAD_URL. $k);
+        //header("Location: ".PAD_URL. $k);
+      	echo "<style>   html,body {margin:0;padding:0;}   iframe { width: 100%; height: 100%; border: 0; }   </style>";
+      	echo '<iframe src="'.PAD_URL. $k.'"></iframe>';
         exit;
       }
     }
