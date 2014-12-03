@@ -32,14 +32,14 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
 }
 
 function storeJson($filename, $key, $value) {
-	$p=@json_decode(file_get_contents('./data/'.$filename.'.json'),true);
+	$p=@json_decode(file_get_contents('../data/'.$filename.'.json'),true);
   if (!is_array($p)) $p=array();
   $p[$key] = $value;
-  file_put_contents('./data/'.$filename.'.json', json_encode($p));
+  file_put_contents('../data/'.$filename.'.json', json_encode($p));
 }
 
 function readJson($filename, $key) {
-	$p=@json_decode(file_get_contents('./data/'.$filename.'.json'),true);
+	$p=@json_decode(file_get_contents('../data/'.$filename.'.json'),true);
   if (!is_array($p)) $p=array();
   return isset($p[$key]) ? $p[$key] : '';
 }
