@@ -103,7 +103,7 @@ if (isset($_GET['show'])) {
   if ($passw) $passw = "<br><b>Passwort: $passw</b>";
   $shortlnk = readJson('shortlnk', $groupmap[$group].'$'.$padname);
   if ($shortlnk) $shortlnk = "<br><b>Kurz-Link: <a href='".SHORTLNK_PREFIX."$shortlnk'>".SHORTLNK_PREFIX."$shortlnk</a></b>";
-  echo "<style> 
+  echo "<meta charset='utf8'><title>$padname - $group - etherpad</title><style> 
   html,body {margin:0;padding:0;} 
   iframe { width: 100%; height: 100%; border: 0; } 
   #info b {font-size:150%;}  
@@ -114,6 +114,7 @@ if (isset($_GET['show'])) {
   (Doppelklick zum ein/ausblenden)<br>
   Pad: ".$padurl.$groupmap[$group].'$'.$padname."$passw$shortlnk</div>";
   echo '<iframe src="'.$padurl.$groupmap[$group].'$'.$padname.'"></iframe>';
+  echo '';
   exit;
 }
 
@@ -149,7 +150,7 @@ if (isset($_GET['list_pads'])) {
   asort($pad_lastedited);
   $pad_lastedited = array_reverse($pad_lastedited);
   echo '<div class="table-responsive"><table class="table">';
-  echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th></tr></thead><tbody>';
+  echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=80></th></tr></thead><tbody>';
   foreach ($pad_lastedited as $padID => $last_edited) {
     $tmp = $instance->getPublicStatus($padID);
 
@@ -164,7 +165,8 @@ if (isset($_GET['list_pads'])) {
     $shortlnk = readJson('shortlnk', $padID);
     if ($shortlnk) $shortlnk = SHORTLNK_PREFIX.$shortlnk;
     
-    echo '<tr class="'.$className.'" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
+    echo '
+    <tr class="'.$className.'" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
       <td class="icon"><button type="button" class="btn btn-link btn-xs pad_opts">
         '.$icon_html.'
       </button></td>
@@ -173,7 +175,9 @@ if (isset($_GET['list_pads'])) {
     echo ' <span class="pull-right"> ';
     if ($public=="true") echo '<span class="label label-success ">Öffentlich</span> ';
     echo '<span class="label label-default ">'.date("d.m.y H:i",$last_edited).'</span> ';
-    echo '</span></td></tr>';
+    echo '</span></td><td><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>
+      <a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'" target="_blank" class="btn btn-xs btn-default open_popup" title="In neuem Fenster öffnen"><i class="glyphicon glyphicon-new-window"></i></a>
+      </td></tr>';
   }
   echo "</tbody></table></div>";
   die();
@@ -201,10 +205,13 @@ if (isset($_POST['createPadinGroup'])) {
       
     }
     $infoBox .= "<div class='alert alert-success'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
-      Pad ".$padname." in Gruppe ".$group.' erstellt.<br> <a href="'.SELF_URL.'?group='.$group.'&show='.$padname.'" class="btn btn-success btn-lg">Direkt zum Pad</a></div>';
+      <h4><i class='glyphicon glyphicon-ok-circle'></i> Pad ".$padname." erfolgreich angelegt!</h4>".
+      '<p><a href="'.SELF_URL.'?group='.$group.'&show='.$padname.'" class="btn btn-success btn-lg">Jetzt öffnen</a></p>
+      </div>';
   } catch (Exception $e) {
     $infoBox .= "<div class='alert alert-danger'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
-      Fehler beim Erstellen des Pads: ".$e->getMessage()."</a></div>\n";
+      <h4><i class='glyphicon glyphicon-warning-sign'></i> Neues Pad konnte nicht erstellt werden.</h4>
+      <p>".$e->getMessage()."</p></div>\n";
 
   }
 

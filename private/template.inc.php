@@ -137,7 +137,12 @@ foreach ($groupmap as $name => $id) {
 
 <script>
     var self_url = <?= json_encode(SELF_URL) ?>, group = <?= json_encode($group) ?>;
-    
+
+    $(document).on('click', ".open_popup", function(e) {
+      window.open($(e.target).closest("a").attr('href'), "", "width=auto,height=auto,toolbar=no,status=no,resizable=yes");
+      return false;
+    });
+      
     var currentEditPadID;
     $(document).on('click', ".pad_opts", function(e) {
       //alert(1)
@@ -159,7 +164,7 @@ foreach ($groupmap as $name => $id) {
       
       $("#delete_dlg").hide();
       $dlg.modal("show");
-    })
+    });
     
     function setAccessPublicToggle(value) {
       $("#access_private").toggleClass("btn-primary", !value);
