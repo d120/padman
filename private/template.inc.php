@@ -147,7 +147,7 @@ foreach ($groupmap as $name => $id) {
       var is_public = $line.attr("data-public");
       
       setAccessPublicToggle(is_public == "true");
-      if (is_public)
+      if (is_public == "true")
         $("#pad_shortlink").val($line.attr("data-shortlnk"));
       else
         $("#pad_shortlink").val("(nur für öffentliche Pads verfügbar)");
@@ -199,6 +199,10 @@ foreach ($groupmap as $name => $id) {
     function setPadPublic(value) {
       $.post(self_url, { "pad_id" : currentEditPadID, "set_public" : value },
       function(data) {
+        if (value=="true")
+          $("#pad_shortlink").val(data.shortlnk);
+        else
+          $("#pad_shortlink").val("(nur für öffentliche Pads verfügbar)");
         loadPadList();
       }, "json");
     }

@@ -3,7 +3,7 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL | E_STRICT);
 header('Content-Type: text/html; charset=utf-8');
 
-include "config.inc.php";
+include "../config.inc.php";
 include "etherpad-lite-client.php";
 
 $infoBox = "";
@@ -119,7 +119,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
 	$ok=$instance->setPublicStatus($padname, $public);
   $sl=$public ? substr(md5($padname),0,7) : null;
   storeJson('shortlnk', $padname, $sl);
-  die(json_encode(array("status"=>"ok","shortlnk"=>$sl)));
+  die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
 	$padname = $_POST['pad_id'];
@@ -176,7 +176,7 @@ if (isset($_GET['list_pads'])) {
 
 if (isset($_POST['createPadinGroup'])) {
 	
-	if ($_POST['start_sitzung']) {
+	if (isset($_POST['start_sitzung'])) {
 		$padname = 'xxxSitzung' . date('Ymd');
 		$passwd = mt_rand(10000, 99999);
 		$starttext = file_get_contents('template-sitzung.txt');
