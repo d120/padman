@@ -91,13 +91,12 @@ function PadManager(self_url, group) {
 	})
 
  	$("#createSitzungPad").click(function() {
-      var $form = $(this).closest('form'); 
-      e.preventDefault();
-      $('#modal_sitzungsconfirm').modal({ backdrop: 'static', keyboard: false })
-          .one('click', '#confirm', function() {
-              $form.trigger('submit');
-          });
+      var $form = $(this).closest('form');
+      $('#modal_sitzungconfirm').modal({ backdrop: 'static', keyboard: false });
       return false;
+    });
+    $('#confirm_createsitzungpad').click(function() {
+    	$('#createSitzungPad').closest('form').trigger('submit');
     });
 
 	function loadPadList() {

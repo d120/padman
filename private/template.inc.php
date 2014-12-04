@@ -131,12 +131,16 @@ foreach ($groupmap as $name => $id) {
 </div><!-- /.modal -->
 
 <div class="modal fade" id="modal_sitzungconfirm">
-  <div class="modal-body">
-    Es ist nicht Mittwoch. Wirklich ein Sitzungspad erstellen?
-  </div>
-  <div class="modal-footer">
-    <button type="button" data-dismiss="modal" class="btn btn-primary" id="confirm">Ja, wirklich erstellen</button>
-    <button type="button" data-dismiss="modal" class="btn">Abbrechen</button>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        Es ist nicht Mittwoch. Wirklich ein Sitzungspad erstellen?
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn btn-primary" id="confirm_createsitzungpad">Ja, wirklich erstellen</button>
+        <button type="button" data-dismiss="modal" class="btn">Abbrechen</button>
+      </div>
+    </div>
   </div>
 </div>
 
