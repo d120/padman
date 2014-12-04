@@ -1,5 +1,8 @@
 
+.container { position: relative; }
 .loader { background: url(loading.gif) no-repeat center center; height: 200px; }
+.top_logo { position:absolute; right: 20px; top: 5px; z-index: 100; }
+.top_colorbar { background-color: #FFA500; height: 8px; }
 
 @media screen and (min-width: 800px) {
 	.panel-header-form { float: right; margin-top:-5px; padding-left: 20px; }

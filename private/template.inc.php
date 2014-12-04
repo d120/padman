@@ -20,8 +20,9 @@
   </head>
 
 <div class="container">
+<div class="top_colorbar"></div>
 
-<img src="https://www.fachschaft.informatik.tu-darmstadt.de/d120de/images/das-wesen-der-informatik.png" style="position:absolute; right: 30px; top: 5px; z-index: 10; ">
+<img src="https://www.fachschaft.informatik.tu-darmstadt.de/d120de/images/das-wesen-der-informatik.png" class="top_logo">
 	<h1 style="font-weight:normal; padding: 15px 0 30px;"><b>Etherpad</b> der Fachschaft Informatik</h1>
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
