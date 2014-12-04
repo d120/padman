@@ -125,7 +125,7 @@ foreach ($groupmap as $name => $id) {
         
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
         <button type="button" class="btn btn-default pull-left" id="delete_pad"><i class="glyphicon glyphicon-trash"></i> Löschen</button>
       </div>
     </div><!-- /.modal-content -->
@@ -142,8 +142,8 @@ foreach ($groupmap as $name => $id) {
         Es ist nicht Mittwoch. Möchtest du wirklich ein Sitzungspad erstellen?
       </div>
       <div class="modal-footer">
-        <button type="button" data-dismiss="modal" class="btn btn-primary" id="confirm_createsitzungpad">Ja, wirklich erstellen</button>
-        <button type="button" data-dismiss="modal" class="btn">Abbrechen</button>
+        <button type="button" data-dismiss="modal" class="btn btn-primary" id="confirm_createsitzungpad">Erstellen</button>
+        <button type="button" data-dismiss="modal" class="btn btn-default">Abbrechen</button>
       </div>
     </div>
   </div>
