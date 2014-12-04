@@ -69,9 +69,10 @@ foreach ($groupmap as $name => $id) {
 		</div>
 		 </form>
 <?php if ($group == "sitzung"): ?>
-		<form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$group?>" method="POST">
+		<form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$group?>" method="POST" id="createSitzungPadForm">
 		<input type="hidden" name="start_sitzung" value="true">
-		<button type="submit" class="btn btn-sm btn-success" name="createPadinGroup" id="createSitzungPad"><i class="glyphicon glyphicon-leaf"></i>Sitzung starten</button>
+    <input type="hidden" name="createPadinGroup" value="1" />
+		<button type="submit" class="btn btn-sm btn-success" id="createSitzungPad"><i class="glyphicon glyphicon-leaf"></i> Sitzung starten</button>
 		</form>
 <?php endif; ?>
 
