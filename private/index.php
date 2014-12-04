@@ -149,7 +149,7 @@ if (isset($_GET['list_pads'])) {
 
   asort($pad_lastedited);
   $pad_lastedited = array_reverse($pad_lastedited);
-  echo '<div class="table-responsive"><table class="table">';
+  echo '<div class="table-responsive"><table class="table table-hover">';
   echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=80></th></tr></thead><tbody>';
   foreach ($pad_lastedited as $padID => $last_edited) {
     $tmp = $instance->getPublicStatus($padID);
@@ -167,7 +167,7 @@ if (isset($_GET['list_pads'])) {
     
     echo '
     <tr class="'.$className.'" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
-      <td class="icon"><button type="button" class="btn btn-link btn-xs pad_opts">
+      <td class="icon pad_opts"><button type="button" class="btn btn-link btn-xs">
         '.$icon_html.'
       </button></td>
       <td class="name"><a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'">'.$shortname.'</a></td><td>';

@@ -7,3 +7,7 @@
 @media screen and (min-width: 800px) {
 	.panel-header-form { float: right; margin-top:-5px; padding-left: 20px; }
 }
+
+td.icon, td.name { cursor: pointer; }
+td.icon:hover button, td.name:hover a { color: #000 !important; }
+td.name:hover a { text-decoration: underline;  }

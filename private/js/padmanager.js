@@ -4,6 +4,9 @@ function PadManager(self_url, group) {
     window.open($(e.target).closest("a").attr('href'), "", "width=auto,height=auto,toolbar=no,status=no,resizable=yes");
     return false;
   });
+  $(document).on('click', 'td.name', function(e) {
+    location.href = $(e.target).closest("td").find("a").attr("href");
+  });
 
   var currentEditPadID;
   $(document).on('click', ".pad_opts", function(e) {
