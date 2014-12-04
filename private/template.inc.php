@@ -134,8 +134,11 @@ foreach ($groupmap as $name => $id) {
 <div class="modal fade" id="modal_sitzungconfirm">
   <div class="modal-dialog">
     <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><i class="glyphicon glyphicon-question-sign"></i> Sitzungspad</h4>
+      </div>
       <div class="modal-body">
-        Es ist nicht Mittwoch. Wirklich ein Sitzungspad erstellen?
+        Es ist nicht Mittwoch. Möchtest du wirklich ein Sitzungspad erstellen?
       </div>
       <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn btn-primary" id="confirm_createsitzungpad">Ja, wirklich erstellen</button>
