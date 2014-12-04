@@ -71,7 +71,7 @@ foreach ($groupmap as $name => $id) {
 <?php if ($group == "sitzung"): ?>
 		<form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$group?>" method="POST">
 		<input type="hidden" name="start_sitzung" value="true">
-		<button type="submit" class="btn btn-sm btn-success" name="createPadinGroup">Sitzung starten</button>
+		<button type="submit" class="btn btn-sm btn-success" name="createPadinGroup" id="createSitzungPad">Sitzung starten</button>
 		</form>
 <?php endif; ?>
 
@@ -236,6 +236,10 @@ foreach ($groupmap as $name => $id) {
     }
 
     loadPadList();
+
+    $("#createSitzungPad").click(function() {
+      return (new Date()).getDay() === 3 || confirm("Es ist nicht Mittwoch. Wirklich ein Sitzungspad erstellen?");
+    });
 
 </script>
 
