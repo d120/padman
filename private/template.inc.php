@@ -150,17 +150,17 @@ foreach ($groupmap as $name => $id) {
 </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     <script src="js/padmanager.js"></script>
 
 
-<script>
+    <script>
     var self_url = <?= json_encode(SELF_URL) ?>, group = <?= json_encode($group) ?>;
     var padMan = new PadManager(self_url, group);
     padMan.loadPadList();
-</script>
+    </script>
 
 
   </body>
