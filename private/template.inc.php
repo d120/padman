@@ -130,6 +130,16 @@ foreach ($groupmap as $name => $id) {
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade" id="modal_sitzungconfirm">
+  <div class="modal-body">
+    Es ist nicht Mittwoch. Wirklich ein Sitzungspad erstellen?
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-primary" id="confirm">Ja, wirklich erstellen</button>
+    <button type="button" data-dismiss="modal" class="btn">Abbrechen</button>
+  </div>
+</div>
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -238,7 +248,14 @@ foreach ($groupmap as $name => $id) {
     loadPadList();
 
     $("#createSitzungPad").click(function() {
-      return (new Date()).getDay() === 3 || confirm("Es ist nicht Mittwoch. Wirklich ein Sitzungspad erstellen?");
+      var $form = $(this).closest('form'); 
+      e.preventDefault();
+      $('#modal_sitzungsconfirm').modal({ backdrop: 'static', keyboard: false })
+          .one('click', '#confirm', function() {
+              $form.trigger('submit');
+          });
+      });
+      return false;
     });
 
 </script>
