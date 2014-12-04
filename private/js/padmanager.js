@@ -97,7 +97,6 @@ function PadManager(self_url, group) {
           .one('click', '#confirm', function() {
               $form.trigger('submit');
           });
-      });
       return false;
     });
 
