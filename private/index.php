@@ -180,6 +180,7 @@ if (isset($_GET['list_pads'])) {
       </td></tr>';
   }
   echo "</tbody></table></div>";
+  if (count($pad_lastedited) == 0) echo "<div style='padding:100px 0;text-align:center;color:#aaa;'>- In dieser Kategorie gibt es noch keine Pads -</div>";
   die();
 }
 
