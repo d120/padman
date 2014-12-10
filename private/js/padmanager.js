@@ -93,9 +93,13 @@ function PadManager(self_url, group) {
   });
 
   $("#createSitzungPad").click(function() {
-    var $form = $(this).closest('form');
-    $('#modal_sitzungconfirm').modal({ backdrop: 'static', keyboard: false });
-    return false;
+    if ( (new Date()).getDay() === 3 ) {
+      return true;
+    } else {
+      var $form = $(this).closest('form');
+      $('#modal_sitzungconfirm').modal({ backdrop: 'static', keyboard: false });
+      return false;
+    }
   });
   $('#confirm_createsitzungpad').click(function() {
     $('#createSitzungPad').closest('form').trigger('submit');

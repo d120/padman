@@ -66,9 +66,14 @@ if (isset($_GET['group'])) {
 
 $instance = new EtherpadLiteClient(API_KEY, API_URL);
 
-$author_name = $_SERVER['PHP_AUTH_USER']; //$_SERVER['HTTP_AUTH_USER'];
+//$author_name = $_SERVER['PHP_AUTH_USER']; //$_SERVER['HTTP_AUTH_USER'];
+$author_cn = $_SERVER['PHP_AUTH_USER'];
+if (file_exists("/home/" . $author_cn . "/.padname")) {
+  $author_name = file_get_contents("/home/" . $author_cn . "/.padname");
+} else {
+  $author_name = $author_cn;
+}
 //$author_cn = $_SERVER['HTTP_AUTH_CN'];
-$author_cn= $author_name;
 //$groups = "sitzung; fachschaft; inforz; ophase"; //base64_decode($_SERVER['HTTP_AUTH_GROUPS']);
 //$author_groups = preg_split("/[\s;]+/", $groups);
 $author_groups = $shown_groups;
@@ -108,7 +113,7 @@ if (isset($_GET['show'])) {
   iframe { width: 100%; height: 100%; border: 0; } 
   #info b {font-size:150%;}  
   #info {position:absolute;bottom:0;left:50%;margin-left:-210px;width:400px;padding:5px 10px;
-    border:1px solid #393;background:#afa;font:status-bar;}
+    border:1px solid #393;background:#afa;font:status-bar;overflow:hidden;}
   </style>
   <div id='info' ondblclick='if(this.style.height==\"0px\")this.style.height=\"inherit\";else this.style.height=\"0px\";'>
   (Doppelklick zum ein/ausblenden)<br>

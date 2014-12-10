@@ -54,6 +54,9 @@ foreach ($groupmap as $name => $id) {
 }
 ?>
      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li style="font-size:8.5pt; color:#999;"><br>Benutzer: <?= $author_cn ?><br>Alias: <?= $author_name ?></li>
+      </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
