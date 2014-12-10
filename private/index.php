@@ -83,7 +83,7 @@ if (!in_array($group, $author_groups)) {
     $group = $author_groups[0];
 }
 
-$author = $instance->createAuthorIfNotExistsFor($author_name, $author_cn);
+$author = $instance->createAuthorIfNotExistsFor($author_cn, $author_name);
 $authorID = $author->authorID;
 
 $validUntil = mktime(0, 0, 0, date("m"), date("d")+1, date("y")); // One day in the future
