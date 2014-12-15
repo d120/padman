@@ -1,4 +1,3 @@
-
 .container { position: relative; }
 .loader { background: url(loading.gif) no-repeat center center; height: 200px; }
 .top_logo { position:absolute; right: 20px; top: 5px; z-index: 100; }
@@ -11,3 +10,7 @@
 td.icon, td.name { cursor: pointer; }
 td.icon:hover button, td.name:hover a { color: #000 !important; }
 td.name:hover a { text-decoration: underline;  }
+
+.form-control[readonly] {
+	cursor: text;
+}
