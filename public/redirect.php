@@ -1,7 +1,3 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
 <?php
 include "../config.inc.php";
 
@@ -14,11 +10,13 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     foreach($p as $k=>$v) {
       if ($v == $res[1]) {
         //header("Location: ".PAD_URL. $k);
+	header("HTTP/1.1 200 So fluffy");
         $shortName = substr($k,strpos($k,'$')+1);
-        echo "<title>$shortName - etherpad</title>";
+        echo '<!doctype html><html><head><meta charset="utf8">';
+        echo "<title>$shortName - etherpad</title>\n";
       	echo "<style>   html,body {margin:0;padding:0;height:100%;overflow:hidden;}
            iframe { width: 100%; height: 100%; border: 0; }   </style>
-           </head><body>";
+           </head><body>\n";
       	echo '<iframe src="'.PAD_URL. $k.'"></iframe></body></html>';
         exit;
       }
@@ -28,6 +26,10 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
 }
 
 ?>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8">
 <style>body { max-width: 600px; margin: 10px auto; }</style>
 
 </head>
