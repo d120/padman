@@ -83,8 +83,12 @@ if (!in_array($group, $author_groups)) {
     $group = $author_groups[0];
 }
 
-$author = $instance->createAuthorIfNotExistsFor($author_cn, $author_name);
-$authorID = $author->authorID;
+try {
+    $author = $instance->createAuthorIfNotExistsFor($author_cn, $author_name);
+    $authorID = $author->authorID;
+} catch(Exception $ex) {
+    die("<h2>Eile mit Weile - Etherpad ist zur Zeit nicht erreichbar</h2>");
+}
 
 $validUntil = mktime(0, 0, 0, date("m"), date("d")+1, date("y")); // One day in the future
 
@@ -113,10 +117,11 @@ if (isset($_GET['show'])) {
   iframe { width: 100%; height: 100%; border: 0; } 
   #info b {font-size:150%;}  
   #info {position:absolute;bottom:0;left:50%;margin-left:-210px;width:400px;padding:5px 10px;
-    border:1px solid #393;background:#afa;font:status-bar;overflow:hidden;}
+    border:1px solid #393;background:#afa;font:status-bar;overflow:hidden;background:rgba(190,255,190,0.6);}
   </style>
-  <div id='info' ondblclick='if(this.style.height==\"0px\")this.style.height=\"inherit\";else this.style.height=\"0px\";'>
-  (Doppelklick zum ein/ausblenden)<br>
+  <div id='info' ondblclick='if(this.style.height==\"0px\")this.style.height=\"inherit\";else this.style.height=\"0px\";'><div style='-webkit-user-select: none;-moz-user-select:none;color:#6a6;'>
+  <a href='#' onclick='this.parentNode.parentNode.style.height=\"0px\";' style='padding:2px 4px;border:1px solid #6a6;float:right;text-decoration:none;font-weight:bold;color:#6a6;'>X</a>
+  (Doppelklick zum ein/ausblenden)<br></div>
   Pad: ".$padurl.$groupmap[$group].'$'.$padname."$passw$shortlnk</div>";
   echo '<iframe src="'.$padurl.$groupmap[$group].'$'.$padname.'"></iframe>';
   echo '';
