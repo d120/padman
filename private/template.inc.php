@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>pad manager</title>
 
+    <script>
+    var padman_data = { "activegroup" : "<?= $group ?>", "groups" : <?= json_encode($groupmap) ?> };
+    </script>
+    
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/pads.css" rel="stylesheet">
@@ -43,16 +47,19 @@
 
 <?php
 
-foreach ($groupmap as $name => $id) {
-	if ($group === $name) {
-		echo "<li class=\"active\"><a href=\"".SELF_URL.$name."\">".$name."</a></li>";
+//foreach ($groupmap as $name => $id) {
+foreach($shown_groups_titles as $name) {
+	$url = SELF_URL.strtolower($name);
+	if ($group === strtolower($name)) {
+		echo "<li class=\"active\"><a href=\"$url\">".$name."</a></li>";
 	}
 	else {
-		echo "<li><a href=\"".SELF_URL."".$name."\">".$name."</a></li>";
+		echo "<li data-id=\"".strtolower($name)."\"><a href=\"$url\">".$name."</a></li>";
 	}
 
 }
 ?>
+        <li><a href="#"><i class="glyphicon glyphicon-plus"></i></a></li>
      </ul>
       <ul class="nav navbar-nav navbar-right">
         <li style="font-size:8.5pt; color:#999;"><br>Benutzer: <?= $author_cn ?><br>Alias: <?= $author_name ?></li>
@@ -104,8 +111,8 @@ foreach ($groupmap as $name => $id) {
           </p>
         </div>
         
-        <div class="form-group">
-          <p>Shortlink</p>
+        <div class="form-group" id="group_shortlink">
+          <p>Shortlink <a href='#' id='edit_shortlink' class='btn btn-xs pull-right btn-default'>bearbeiten</a></p>
           <p><input type="text" class="form-control" readonly id="pad_shortlink" value="(nur für öffentliche Pads verfügbar)"></p>
         </div>
         
@@ -152,8 +159,30 @@ foreach ($groupmap as $name => $id) {
   </div>
 </div>
 
+
+<div class="modal fade" id="modal_rename">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><i class="glyphicon glyphicon-question-sign"></i> Pad umbenennen</h4>
+      </div>
+      <div class="modal-body">
+        Gib einen neuen Namen für das Pad ein:<br>
+	<input type="text" id="rename_pad" class="form-control"><br><br>
+	Falls du das Pad verschieben möchtest, wähle die neue Kategorie aus:<br>
+	<select id="rename_group" class="form-control"></select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="confirm_rename">Umbenennen</button>
+        <button type="button" data-dismiss="modal" class="btn btn-default">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="js/jquery.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     <script src="js/padmanager.js"></script>

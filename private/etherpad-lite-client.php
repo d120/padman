@@ -1,7 +1,7 @@
 <?php
 class EtherpadLiteClient {
 
-  const API_VERSION             = '1.1';
+  const API_VERSION             = '1.2.9';
 
   const CODE_OK                 = 0;
   const CODE_INVALID_PARAMETERS = 1;
@@ -66,7 +66,7 @@ class EtherpadLiteClient {
     if(!$result){
       throw new UnexpectedValueException("Empty or No Response from the server");
     }
-    # var_dump($result);
+    // var_dump($url, $result);
     $result = json_decode($result);
     if ($result === null){
       throw new UnexpectedValueException("JSON response could not be decoded");
@@ -292,6 +292,13 @@ class EtherpadLiteClient {
   public function deletePad($padID){
     return $this->post("deletePad", array(
       "padID" => $padID
+    ));
+  }
+
+// ergänzt mweller 2015-03-04 analog zu deletePad, api-doku siehe hier http://etherpad.org/doc/v1.4.1/#index_movepad_sourceid_destinationid_force_false
+  public function movePad($padID, $new){
+    return $this->post("movePad", array(
+      "sourceID" => $padID, "destinationID" => $new
     ));
   }
 

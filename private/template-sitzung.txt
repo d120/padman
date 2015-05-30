@@ -1,36 +1,50 @@
-Protokoll der Fachschaftssitzung vom {{heute}}
+{{Vorlage:Protokoll          |Gremium=Fachschaftssitzung
+|Datum={{heute}}        |Zeit=18:00 - 
+|Protokollant=                  |Redeleitung=
+|Anwesende=
+online: 
+}}
 
-Protokollant:
-
-
-Anwesend:
-
-
-Gäste:
-
-
-Post:
+== Post ==
 
 
-Mitteilungen:
+== Emails ==
 
 
-Termine:
+== Mitteilungen ==
 
 
-Rückblick:
+== Termine ==
 
 
-UAs / Gremien / Akt. / FSK:
+== Rückblick ==
 
 
-Aufgaben:
+== Unterausschüsse & Gremien ==
 
 
-TOP:
+== Aufgaben ==
 
 
-Sonstiges:
+== TOPs ==
 
 
-Die Sitzung wird geschlossen um
+
+== Sonstiges ==
+
+
+
+
+<!--
+
+Vorlagen zum Rauskopieren:
+
+{{Vorlage:Meinungsbild
+|Frage=  
+|ja=         | nein=          | enthaltungen=        }}
+
+{{Vorlage:Meinungsbild          |titel=Beschluss 
+|Frage=  
+|ja=         | nein=          | enthaltungen=        }}
+
+-->

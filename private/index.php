@@ -5,7 +5,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 include "../config.inc.php";
 include "etherpad-lite-client.php";
-
+$shown_groups = array_map("strtolower", $shown_groups_titles);
 $infoBox = "";
 
 if ($_SERVER["HTTP_HOST"] != HOST_NAME) {
@@ -47,6 +47,11 @@ function readJson($filename, $key) {
   $p=@json_decode(file_get_contents('../data/'.$filename.'.json'),true);
   if (!is_array($p)) $p=array();
   return isset($p[$key]) ? $p[$key] : '';
+}
+
+function moveJson($filename, $oldkey, $newkey) {
+  storeJson($filename, $newkey, readJson($filename, $oldkey));
+  storeJson($filename, $oldkey, null);
 }
 
 function setPassword($padID, $passwd) {
@@ -108,23 +113,42 @@ setcookie('sessionID', implode(",",$sessions), $validUntil, '/', HOST_NAME);
 if (isset($_GET['show'])) {
   $padname = htmlspecialchars($_GET['show']);
   //header("Location: ".$padurl.$padname); #+$padurl+$padname);
+  $padID = $groupmap[$group].'$'.$padname;
   $passw = readJson('passwords', $groupmap[$group].'$'.$padname);
-  if ($passw) $passw = "<br><b>Passwort: $passw</b>";
+  if ($passw) $passw = "<br><b>Passwort: <input type='text' value='$passw' readonly ondblclick='event.stopPropagation();return false' onclick='this.select()' id='padview_pw'></b>";
   $shortlnk = readJson('shortlnk', $groupmap[$group].'$'.$padname);
   if ($shortlnk) $shortlnk = "<br><b>Kurz-Link: <a href='".SHORTLNK_PREFIX."$shortlnk'>".SHORTLNK_PREFIX."$shortlnk</a></b>";
-  echo "<meta charset='utf8'><title>$padname - $group - etherpad</title><style> 
-  html,body {margin:0;padding:0;} 
-  iframe { width: 100%; height: 100%; border: 0; } 
-  #info b {font-size:150%;}  
-  #info {position:absolute;bottom:0;left:50%;margin-left:-210px;width:400px;padding:5px 10px;
-    border:1px solid #393;background:#afa;font:status-bar;overflow:hidden;background:rgba(190,255,190,0.6);}
-  </style>
-  <div id='info' ondblclick='if(this.style.height==\"0px\")this.style.height=\"inherit\";else this.style.height=\"0px\";'><div style='-webkit-user-select: none;-moz-user-select:none;color:#6a6;'>
-  <a href='#' onclick='this.parentNode.parentNode.style.height=\"0px\";' style='padding:2px 4px;border:1px solid #6a6;float:right;text-decoration:none;font-weight:bold;color:#6a6;'>X</a>
-  (Doppelklick zum ein/ausblenden)<br></div>
-  Pad: ".$padurl.$groupmap[$group].'$'.$padname."$passw$shortlnk</div>";
-  echo '<iframe src="'.$padurl.$groupmap[$group].'$'.$padname.'"></iframe>';
+  echo "<meta charset='utf8'><title>$padname - $group - d120.de/pad</title><style> 
+    @import url(css/pads.css);
+    html, body { margin: 0; padding: 0; }
+    </style><script src='js/pad_iframe.js'></script>
+    <div id='padview_info'><div class='noselect title'>
+    <a href='#' id='padview_x' class='x'>X</a>
+    Details zum Pad \"$group / $padname\"<br></div><div class='innerDiv'>
+    Pad: ".$padurl.$groupmap[$group].'$'.$padname."<br><a href='?pad_id=$padID&export=wiki' onclick='return export_popup(this.href);'>Wiki Export</a>$passw$shortlnk</div></div>";
+  echo '<iframe id="padview_iframe" src="'.$padurl.$padID.'"></iframe>';
   echo '';
+  exit;
+}
+
+// Export as wikitext for MediaWiki
+if (isset($_GET['pad_id']) && isset($_GET['export'])) {
+  header("Content-Type: text/plain; charset=utf-8");
+  $padname = $_GET['pad_id'];
+  $result = $instance->getHTML($padname);
+  $txt = $result->html; 
+  $txt = str_replace(array("<br>", "</li>", "<em>", "</em>", "&nbsp;", "<ul"  , "&#x2F;", "&lt;bteil&gt;", "&lt;/bteil&gt;"  ),
+		     array("\n"  , "\n"   , "''"  , "''"   , " "     , "\n<ul", "/",      "<bteil>",       "</bteil>"        ),
+		     $txt);
+  $txt = preg_replace('#<!DOCTYPE HTML><html><body>|</body></html>|<a href="[^"]+">|</a>|<strong>|</strong>|</a>#', '', $txt);
+  $l = explode("\n", $txt); $ul = 0;
+  foreach($l as $d) {
+    if (strpos($d, "<ul")!==false) $ul++;
+    if (strpos($d, "</ul>")!==false) $ul--;
+    $d = str_replace(array("<ul class=\"bullet\">", "<ul class=\"indent\">", "</ul>", "<li>"), array("","","",str_repeat("*",$ul)), $d);
+    echo "$d\n";
+  }
+  //echo '<textarea rows=20 cols=100>'.htmlspecialchars($txt).'</textarea>';
   exit;
 }
 
@@ -133,7 +157,11 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
   $public = $_POST['set_public'] == 'true';
   $ok=$instance->setPublicStatus($padname, $public);
-  $sl=$public ? substr(md5($padname),0,7) : null;
+  $sl = null;
+  if ($public) {
+    if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
+    if (!$sl) $sl = substr(md5($padname),0,7);
+  }
   storeJson('shortlnk', $padname, $sl);
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
@@ -149,6 +177,21 @@ if (isset($_POST['delete_this_pad']) && isset($_POST['pad_id'])) {
   $ok=$instance->deletePad($padname);
   die(json_encode(array("status"=>"ok")));
 }
+
+if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
+  $padname = $_POST['pad_id'];
+  try {
+    $ok=$instance->movePad($padname, $_POST['rename']);
+  } catch(Exception $ex) {
+    die(json_encode(array("status"=>"error", "msg"=>$ex)));
+  }
+
+  moveJson('passwords', $padname, $_POST['rename']);
+  moveJson('shortlnk', $padname, $_POST['rename']);
+  
+  die(json_encode(array("status"=>"ok")));
+}
+
 if (isset($_GET['list_pads'])) {
   $pads = $instance->listPads($groupmap[$group]);
   $pad_lastedited = Array();
@@ -160,7 +203,7 @@ if (isset($_GET['list_pads'])) {
   asort($pad_lastedited);
   $pad_lastedited = array_reverse($pad_lastedited);
   echo '<div class="table-responsive"><table class="table table-hover">';
-  echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=80></th></tr></thead><tbody>';
+  echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=100></th></tr></thead><tbody>';
   foreach ($pad_lastedited as $padID => $last_edited) {
     $tmp = $instance->getPublicStatus($padID);
 
@@ -177,15 +220,16 @@ if (isset($_GET['list_pads'])) {
     
     echo '
     <tr class="'.$className.'" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
-      <td class="icon pad_opts"><button type="button" class="btn btn-link btn-xs">
+      <td class="pad_icon icon"><!--button type="button" class="btn btn-link btn-xs"-->
         '.$icon_html.'
-      </button></td>
+      <!--/button--></td>
       <td class="name"><a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'">'.$shortname.'</a></td><td>';
     if ($passw) echo ' <code>'.$passw.'</code>';
     echo ' <span class="pull-right"> ';
     if ($public=="true") echo '<span class="label label-success ">Öffentlich</span> ';
     echo '<span class="label label-default ">'.date("d.m.y H:i",$last_edited).'</span> ';
     echo '</span></td><td><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>
+    	 <button class="btn btn-xs btn-default pad_rename" title="Umbenennen"><i class="glyphicon glyphicon-pencil"></i></button>
       <a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'" target="_blank" class="btn btn-xs btn-default open_popup" title="In neuem Fenster öffnen"><i class="glyphicon glyphicon-new-window"></i></a>
       </td></tr>';
   }
@@ -199,21 +243,23 @@ if (isset($_POST['createPadinGroup'])) {
   if (isset($_POST['start_sitzung'])) {
     $padname = 'Sitzung' . date('Ymd');
     $passwd = mt_rand(10000, 99999);
-    $starttext = file_get_contents('template-sitzung.txt');
-    $starttext = str_replace("{{heute}}", date("r"), $starttext);
-    $starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
   } else {
     $padname = $_POST['pad_name'];
     $starttext = "Willkommen im wesentlichen Etherpad auf D120.de!\r\n\r\n";
   }
 
   try {
-    $instance->createGroupPad($groupmap[$group], $padname, $starttext);
+    $instance->createGroupPad($groupmap[$group], $padname, '');
     if (isset($_POST['start_sitzung'])) {
       storeJson('shortlnk', $groupmap[$group] . '$' . $padname, 'si'.date('md'));
       $instance->setPublicStatus($groupmap[$group] . '$' . $padname, true);
       setPassword($groupmap[$group] . '$' . $padname, $passwd);
       
+      $starttext = file_get_contents('template-sitzung.txt');
+      $starttext = str_replace("{{heute}}", date("d.m.Y"), $starttext);
+      $starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
+      // $starttext = nl2br($starttext);
+      $instance->setText($groupmap[$group] . '$' . $padname, $starttext);
     }
     $infoBox .= "<div class='alert alert-success'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
       <h4><i class='glyphicon glyphicon-ok-circle'></i> Pad ".$padname." erfolgreich angelegt!</h4>".
