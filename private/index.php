@@ -71,8 +71,7 @@ if (isset($_GET['group'])) {
 
 $instance = new EtherpadLiteClient(API_KEY, API_URL);
 
-//$author_name = $_SERVER['PHP_AUTH_USER']; //$_SERVER['HTTP_AUTH_USER'];
-$author_cn = $_SERVER['PHP_AUTH_USER'];
+$author_cn = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : 'anonymous');
 if (file_exists("/home/" . $author_cn . "/.padname")) {
   $author_name = file_get_contents("/home/" . $author_cn . "/.padname");
 } else {

@@ -35,9 +35,10 @@ function PadManager(self_url, group) {
   }
   
   function setAccessPublicToggle(value) {
+    $("#group_shortlink").toggle(value);
+
     $("#access_private").toggleClass("btn-primary", !value);
     $("#access_private").toggleClass("btn-default", value);
-    $("#group_shortlink").toggle(value);
 
     $("#access_public").toggleClass("btn-primary", value);
     $("#access_public").toggleClass("btn-default", !value);
