@@ -24,10 +24,11 @@
   </head>
 
 <div class="container">
-<div class="top_colorbar"></div>
+<div class="top_colorbar" style="background-color: <?= HEADER_ACCENT_COLOR ?>;"></div>
 
-<img src="https://www.fachschaft.informatik.tu-darmstadt.de/d120de/images/das-wesen-der-informatik.png" class="top_logo">
-	<h1 style="font-weight:normal; padding: 15px 0 30px;"><b>Etherpad</b> der Fachschaft Informatik</h1>
+  <img src="<?= HEADER_LOGO_URL ?>" class="top_logo">
+  <h1 style="font-weight:normal; padding: 15px 0 30px;"><?= HEADER_H1 ?></h1>
+
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -150,6 +151,10 @@ foreach($shown_groups_titles as $name) {
     padMan.loadPadList();
     </script>
 
+<div class="footer container">
+Etherpad-Lite Manager by Max Weller et al  &middot;  <a href="https://github.com/d120/padman">This program is free software</a>
+&middot; <a href="https://github.com/d120/padman/issues">Issues</a>
+</div>
 
   </body>
 </html>

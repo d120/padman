@@ -1,7 +1,7 @@
 .container { position: relative; }
 .loader { background: url(loading.gif) no-repeat center center; height: 200px; }
 .top_logo { position:absolute; right: 20px; top: 5px; z-index: 100; }
-.top_colorbar { background-color: #FFA500; height: 8px; }
+.top_colorbar { height: 8px; }
 
 #grouplist-navbar li.ui-state-hover { outline: 1px solid green; }
 #grouplist-navbar li.ui-state-active { background: #ddffdd; }
@@ -19,6 +19,8 @@ td.icon { cursor: move; }
 .form-control[readonly] {
     cursor: text;
 }
+
+.footer { color: #ccc; font-size: 10pt; }
 
 /* --> Pad View (IFrame) */
 iframe#padview_iframe { width: 100%; height: 100%; border: 0; } 
