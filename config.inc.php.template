@@ -9,8 +9,14 @@ define("API_KEY", '');
 // insert here the url to the etherpad-lite api endpoint
 define("API_URL", 'http://127.0.0.1:9001/api');
 
+define("ADD_GROUP_LINK", "mailto:admin@example.org?subject=Etherpad%20-%20Bitte%20Neue%20Gruppe%20Anlegen");
+
 // modify the categories shown on the page
 $shown_groups = array("category1", "category2");
 
+// set to non-empty to require a password for pad deletion
+define("DELETE_PASSWORD", "");
+
+define("SHORTLNK_PREFIX", "http://pad.example.org/pp/");
 
 
