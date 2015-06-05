@@ -6,7 +6,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
 	if (preg_match('#^/pubpad/(.*)$#', $url, $res)) {
     
 		
-    $p = json_decode(file_get_contents("../data/shortlnk.json"), true);
+    $p = readJson("shortlnk");
     foreach($p as $k=>$v) {
       if ($v == $res[1]) {
         //header("Location: ".PAD_URL. $k);

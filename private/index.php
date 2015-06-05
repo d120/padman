@@ -4,6 +4,7 @@ error_reporting(E_ALL | E_STRICT);
 header('Content-Type: text/html; charset=utf-8');
 
 include "../config.inc.php";
+include "../jsondb.inc.php";
 include "etherpad-lite-client.php";
 $shown_groups = array_map("strtolower", $shown_groups_titles);
 $infoBox = "";
@@ -34,24 +35,6 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     echo "<h3>File not found</h3>";
     exit;
   }
-}
-
-function storeJson($filename, $key, $value) {
-  $p=@json_decode(file_get_contents('../data/'.$filename.'.json'),true);
-  if (!is_array($p)) $p=array();
-  $p[$key] = $value;
-  file_put_contents('../data/'.$filename.'.json', json_encode($p));
-}
-
-function readJson($filename, $key) {
-  $p=@json_decode(file_get_contents('../data/'.$filename.'.json'),true);
-  if (!is_array($p)) $p=array();
-  return isset($p[$key]) ? $p[$key] : '';
-}
-
-function moveJson($filename, $oldkey, $newkey) {
-  storeJson($filename, $newkey, readJson($filename, $oldkey));
-  storeJson($filename, $oldkey, null);
 }
 
 function setPassword($padID, $passwd) {
