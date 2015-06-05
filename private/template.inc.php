@@ -59,7 +59,7 @@ foreach($shown_groups_titles as $name) {
 
 }
 ?>
-        <li><a href="#"><i class="glyphicon glyphicon-plus"></i></a></li>
+        <li><a href="<?= ADD_GROUP_LINK ?>"><i class="glyphicon glyphicon-plus"></i></a></li>
      </ul>
       <ul class="nav navbar-nav navbar-right">
         <li style="font-size:8.5pt; color:#999;"><br>Benutzer: <?= $author_cn ?><br>Alias: <?= $author_name ?></li>
