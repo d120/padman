@@ -1,5 +1,6 @@
 function PadManager(self_url, group) {
-    
+  var self = this;
+
   $(document).on('click', ".open_popup", function(e) {
     window.open($(e.target).closest("a").attr('href'), "", "width=auto,height=auto,toolbar=no,status=no,resizable=yes");
     return false;
@@ -11,8 +12,12 @@ function PadManager(self_url, group) {
   var currentEditPadID;
   $(document).on('click', ".pad_opts", function(e) {
     //alert(1)
-    var $dlg = $("#modal_options");
     var $line = $(e.target).closest("[data-padID]");
+    self.editPad($line);
+  });
+
+  this.editPad = function($line) {
+    var $dlg = $("#modal_options");
     currentEditPadID = $line.attr("data-padID");
     var is_public = $line.attr("data-public");
 
@@ -27,7 +32,7 @@ function PadManager(self_url, group) {
 
     $("#delete_dlg").hide();
     $dlg.modal("show");
-  });
+  }
 
   window.onscroll = function() {
     if (window.scrollY > 110) $(".navbar").addClass("navbar-fixed-top");
@@ -120,8 +125,8 @@ function PadManager(self_url, group) {
   });
 
   //--> Rename pad
-  
-  for(var k in padman_data.groups) $("#rename_group").append("<option value='"+padman_data.groups[k]+"'>"+k+"</option>");
+  if (padman_data)
+      for(var k in padman_data.groups) $("#rename_group").append("<option value='"+padman_data.groups[k]+"'>"+k+"</option>");
 
   $(document).on('click', '.pad_rename', function(e) {
     var $dlg = $("#modal_rename");

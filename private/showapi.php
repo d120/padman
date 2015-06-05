@@ -31,7 +31,7 @@ if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
   try {
     $ok=$instance->movePad($padname, $_POST['rename']);
   } catch(Exception $ex) {
-    die(json_encode(array("status"=>"error", "msg"=>$ex)));
+    die(json_encode(array("status"=>"error", "msg"=>"$ex")));
   }
 
   moveJson('passwords', $padname, $_POST['rename']);
