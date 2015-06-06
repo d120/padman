@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors', 'On');
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL & ~E_NOTICE );
 header('Content-Type: text/html; charset=utf-8');
 
 include "../config.inc.php";

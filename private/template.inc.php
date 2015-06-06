@@ -49,7 +49,11 @@
 <?php
 
 //foreach ($groupmap as $name => $id) {
-foreach($shown_groups_titles as $name) {
+$i = 0;
+foreach($shown_groups_titles as $name){
+	if ($i++ == 8) {
+		echo "<li class='dropdown'><a href='#' class='dropdown-toggle' data-toggle='dropdown' style='font-size:140%;font-weight:bold;padding-top:9px;'>&hellip;</a><ul class='dropdown-menu'>";
+	}
 	$url = SELF_URL.strtolower($name);
 	if ($group === strtolower($name)) {
 		echo "<li class=\"active\"><a href=\"$url\">".$name."</a></li>";
@@ -58,6 +62,9 @@ foreach($shown_groups_titles as $name) {
 		echo "<li data-id=\"".strtolower($name)."\"><a href=\"$url\">".$name."</a></li>";
 	}
 
+}
+if ($i > 8) {
+	echo "</ul></li>";
 }
 ?>
         <li><a href="<?= ADD_GROUP_LINK ?>"><i class="glyphicon glyphicon-plus"></i></a></li>

@@ -1,12 +1,15 @@
 <?php
+//ini_set("display_errors","on");
 include "../config.inc.php";
+include "../jsondb.inc.php";
 
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
 	$url = $_SERVER["REDIRECT_SCRIPT_URL"];
-	if (preg_match('#^/pubpad/(.*)$#', $url, $res)) {
-    
-		
-    $p = readJson("shortlnk");
+}
+if (isset($_GET["lnk"])) $url = $_GET["lnk"];
+
+if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
+    $p = loadJson("shortlnk");
     foreach($p as $k=>$v) {
       if ($v == $res[1]) {
         //header("Location: ".PAD_URL. $k);
@@ -23,7 +26,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     }
     
   }
-}
+
 
 ?>
 <!doctype html>
