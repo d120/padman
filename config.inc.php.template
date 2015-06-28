@@ -22,6 +22,7 @@ $shown_groups = array("category1", "category2");
 
 // set to non-empty to require a password for pad deletion
 define("DELETE_PASSWORD", "");
+define("ALLOW_ANON_PAD_CREATE", false);
 
 define("SHORTLNK_PREFIX", "http://pad.example.org/pp/");
 
