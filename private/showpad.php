@@ -14,6 +14,7 @@ if(!$instance) exit;
     $public = $instance->getPublicStatus($padID); $tags = "";
   } catch(InvalidArgumentException $ex) {
     load_view("pad_not_found", array("pad" => "$group/$padname"));
+    return;
   }
     if ($public->publicStatus) {
       $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
