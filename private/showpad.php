@@ -10,7 +10,11 @@ if(!$instance) exit;
   $shortnam = readJson('shortlnk', $groupmap[$group].'$'.$padname);
   $shortlnk = "";
   if ($shortnam) $shortlnk = "Kurz-Link: <br><b><a href='".SHORTLNK_PREFIX."$shortnam' class='elipsis'>".SHORTLNK_PREFIX."$shortnam</a></b>";
-  $public = $instance->getPublicStatus($padID); $tags = "";
+  try {
+    $public = $instance->getPublicStatus($padID); $tags = "";
+  } catch(InvalidArgumentException $ex) {
+    load_view("pad_not_found", array("pad" => "$group/$padname"));
+  }
     if ($public->publicStatus) {
       $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
     } else{

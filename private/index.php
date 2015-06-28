@@ -3,8 +3,10 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL & ~E_NOTICE );
 header('Content-Type: text/html; charset=utf-8');
 
+define('VIEW_DIR', dirname(__FILE__).'/../views');
 include "../config.inc.php";
 include "../jsondb.inc.php";
+include "../views.inc.php";
 include "etherpad-lite-client.php";
 $shown_groups = array_map("strtolower", $shown_groups_titles);
 $infoBox = "";
@@ -54,7 +56,9 @@ if (isset($_GET['group'])) {
 
 $instance = new EtherpadLiteClient(API_KEY, API_URL);
 
-$author_cn = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : 'anonymous');
+if (isset($_SERVER['PHP_AUTH_USER']) || ALLOW_ANON_PAD_CREATE) $allow_pad_create = true;
+
+$author_cn = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : 'anonymous_'.substr(md5($_SERVER["REMOTE_ADDR"]),0,10));
 if (file_exists("/home/" . $author_cn . "/.padname")) {
   $author_name = file_get_contents("/home/" . $author_cn . "/.padname");
 } else {
@@ -128,33 +132,22 @@ if (isset($_GET['list_pads'])) {
   echo '<div class="table-responsive"><table class="table table-hover">';
   echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=100></th></tr></thead><tbody>';
   foreach ($pad_lastedited as $padID => $last_edited) {
+    $PAD = array("id" => $padID, "last_edited" => $last_edited,  "group" => $group);
+    
     $tmp = $instance->getPublicStatus($padID);
 
-    $shortname = substr($padID,strpos($padID, "$")+1);
-    $icon_html = ""; $className = "";
+    $PAD["shortname"] = substr($padID,strpos($padID, "$")+1);
+    $PAD["icon_html"] = ""; $PAD["className"] = "";
     if ($tmp->publicStatus) {
-      $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $className="";
+      $PAD["icon_html"] = '<span class="glyphicon glyphicon-globe"></span> '; $PAD["public"]="true"; $PAD["className"]="";
     } else{
-      $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false";
+      $PAD["icon_html"] = '<span class="glyphicon glyphicon-home"></span> '; $PAD["public"]="false";
     }
-    $passw = readJson('passwords', $padID);
-    $shortlnk = readJson('shortlnk', $padID);
-    if ($shortlnk) $shortlnk = SHORTLNK_PREFIX.$shortlnk;
+    $PAD["passw"] = readJson('passwords', $padID);
+    $PAD["shortlnk"] = readJson('shortlnk', $padID);
+    if ($PAD["shortlnk"]) $PAD["shortlnk"] = SHORTLNK_PREFIX.$PAD["shortlnk"];
     
-    echo '
-    <tr class="'.$className.'" data-padID="'.$padID.'" data-public="'.$public.'" data-passw="'.$passw.'" data-shortlnk="'.$shortlnk.'"> 
-      <td class="pad_icon icon"><!--button type="button" class="btn btn-link btn-xs"-->
-        '.$icon_html.'
-      <!--/button--></td>
-      <td class="name"><a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'">'.$shortname.'</a></td><td>';
-    if ($passw) echo ' <code>'.$passw.'</code>';
-    echo ' <span class="pull-right"> ';
-    if ($public=="true") echo '<span class="label label-success ">Öffentlich</span> ';
-    echo '<span class="label label-default ">'.date("d.m.y H:i",$last_edited).'</span> ';
-    echo '</span></td><td><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>
-    	 <button class="btn btn-xs btn-default pad_rename" title="Umbenennen"><i class="glyphicon glyphicon-pencil"></i></button>
-      <a href="'.SELF_URL.'?group='.$group.'&show='.$shortname.'" target="_blank" class="btn btn-xs btn-default open_popup" title="In neuem Fenster öffnen"><i class="glyphicon glyphicon-new-window"></i></a>
-      </td></tr>';
+    load_view("pad_list_item", $PAD);
   }
   echo "</tbody></table></div>";
   if (count($pad_lastedited) == 0) echo "<div style='padding:100px 0;text-align:center;color:#aaa;'>- In dieser Kategorie gibt es noch keine Pads -</div>";
@@ -166,6 +159,9 @@ if (isset($_COOKIE["infobox"])) {
   setcookie("infobox", null);
 }
 
-include "template.inc.php";
+load_view("layout", array(
+  "group_titles" => $shown_groups_titles, "groupmap" => $groupmap, "current_group" => $group, "allow_pad_create" => $allow_pad_create,
+  "login" => array("cn" => $author_cn, "name" => $author_name)
+));
 
 ?>

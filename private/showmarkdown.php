@@ -11,6 +11,8 @@ if (!$instance) exit;
 @media print {
   .container { width: auto; } a::after { display: none; } a { text-decoration: underline!important; }
 }
+.container {text-align:justify}
+img {max-width:100%}
 </style>
 <script src="js/marked.js"></script>
 <div class="container">
