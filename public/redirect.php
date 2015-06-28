@@ -33,6 +33,7 @@ if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
 <html>
 <head>
 <meta charset="utf8">
+<meta name='viewport' content='width=device-width, initial-scale=1'>
 <style>body { max-width: 600px; margin: 10px auto; }</style>
 
 </head>
