@@ -13,6 +13,7 @@ if(!$instance) exit;
   try {
     $public = $instance->getPublicStatus($padID); $tags = "";
   } catch(InvalidArgumentException $ex) {
+    header("HTTP/1.1 404 Not Found");
     load_view("pad_not_found", array("pad" => "$group/$padname"));
     return;
   }

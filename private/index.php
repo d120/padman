@@ -48,12 +48,6 @@ function setPassword($padID, $passwd) {
 
 $padurl = PAD_URL;
 
-$group = "fachschaft";
-
-if (isset($_GET['group'])) {
-  $group = $_GET['group'];
-}
-
 $instance = new EtherpadLiteClient(API_KEY, API_URL);
 
 if (isset($_SERVER['PHP_AUTH_USER']) || ALLOW_ANON_PAD_CREATE) $allow_pad_create = true;
@@ -70,8 +64,14 @@ if (file_exists("/home/" . $author_cn . "/.padname")) {
 $author_groups = $shown_groups;
 
 $author_groups = array_intersect($author_groups, $shown_groups);
+
+if (isset($_GET['group'])) $group = $_GET['group'];
+else $group = $author_groups[0];
+
 if (!in_array($group, $author_groups)) {
-    $group = $author_groups[0];
+    header("HTTP/1.1 404 Not found");
+    load_view("group_not_found", array("group" => $group));
+    return;
 }
 
 try {

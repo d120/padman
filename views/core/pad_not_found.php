@@ -1,4 +1,6 @@
-<h2>Fehler: Das Pad <?=htmlentities($pad)?> konnte nicht geladen werden.</h2>
+<h2>Fehler</h2>
+
+<p>Das Pad <?=htmlentities($pad)?> konnte nicht geladen werden.</p>
 
 
 
