@@ -131,7 +131,14 @@ if ($i > 8) {
       <div class="modal-header">
         <h4 class="modal-title"><i class="glyphicon glyphicon-question-sign"></i> Pad umbenennen</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body pleasewait">
+	<p>Eile mit Weile...</p>
+	<div class="progress">
+	  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 45%">
+	  </div>
+	</div>
+      </div>
+      <div class="modal-body rename">
         Gib einen neuen Namen für das Pad ein:<br>
 	<input type="text" id="rename_pad" class="form-control"><br><br>
 	Falls du das Pad verschieben möchtest, wähle die neue Kategorie aus:<br>

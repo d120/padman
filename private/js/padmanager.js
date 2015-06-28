@@ -130,6 +130,7 @@ function PadManager(self_url, group) {
 
   $(document).on('click', '.pad_rename', function(e) {
     var $dlg = $("#modal_rename");
+    $(".rename", $dlg).show(); $(".pleasewait", $dlg).hide(); $(".modal-footer button",$dlg).attr("disabled",false);
     var $line = $(e.target).closest("[data-padID]");
     currentEditPadID = $line.attr("data-padID");
     
@@ -144,8 +145,11 @@ function PadManager(self_url, group) {
     renamePad(currentEditPadID, $("#rename_group").val()+'$'+$("#rename_pad").val());
   });
   function renamePad(oldID, newID) {
+    $("#modal_rename .rename").hide(); $("#modal_rename .pleasewait").show(); $("#modal_rename .modal-footer button").attr("disabled",true);
+    var x=0,progress=setInterval(function (){ $("#modal_rename .progress-bar").css("width",x+"%"); x++; }, 100);
     $.post(self_url, { "pad_id" : oldID, "rename" : newID },
     function(data) {
+      clearInterval(progress);
       loadPadList();
       $("#modal_rename").modal("hide");
     }, "json");
@@ -156,6 +160,7 @@ function PadManager(self_url, group) {
     hoverClass: "ui-state-active",
     tolerance: "pointer",
     drop: function(event, ui) {
+      $("#modal_rename").modal("show");
       var oldPadID = ui.helper.context.getAttribute("data-padid"), p = oldPadID.split(/\$/);
       var newID = padman_data['groups'][this.getAttribute("data-id")] + '$' + p[1];
       console.log(p, this.getAttribute("data-name"), this, newID);
