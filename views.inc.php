@@ -13,7 +13,7 @@
    * Zuweisen einer global gültigen Ansichtsvariablen
    **/
   function set_view_var($name, $value) {
-    trace("VIEW...set_var '$name' := ",$value);
+    //trace("VIEW...set_var '$name' := ",$value);
     $GLOBALS["globalViewVars"][$name] = $value;
   }
   
@@ -38,7 +38,7 @@
       echo "<div class='alert alert-block alert-error'><h4>An error has occured: </h4>Viewloader was unable to load the requested view $viewName, because the file core/view/$viewName.php does not exist.</div>";
       return;
     }
-    trace("VIEW...loading view",$viewName);
+    //trace("VIEW...loading view",$viewName);
     extract($GLOBALS["globalViewVars"]);
     extract($_DATA);
     include ($fn);
