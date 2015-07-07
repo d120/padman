@@ -75,7 +75,7 @@ if ($i > 8) {
   </div><!-- /.container-fluid -->
 </nav>
 
-<?= $infoBox ?>
+<?= isset($infoBox) ? $infoBox : '' ?>
 
 
 <div class="panel panel-default">
