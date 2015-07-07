@@ -21,7 +21,7 @@ if(!$instance) exit;
     return;
   }
   
-  if ($password) setcookie("password", $password, 0, "/pad/p/".$padID);
+  if ($password) setcookie("password", $password, 0, PAD_URL.$padID);
   
   //cache content
   $result = $instance->getText($padID);
@@ -62,7 +62,7 @@ if(!$instance) exit;
     </div><div class='content col-sm-4'>$shortlnk</div></div>";
   
   echo "</div>";
-  echo '<iframe id="padview_iframe" src="/pad/p/'.$padID.'"></iframe>';
+  echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
   include "template-modal-options.html";
   echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group . '"); </script>';
   
