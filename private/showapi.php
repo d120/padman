@@ -16,7 +16,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
-  $ok=setPassword($padname, $_POST['set_passw']);
+  $ok=setPassword($padname, preg_replace('/[^a-zA-Z0-9_.-]/','',$_POST['set_passw']));
   die(json_encode(array("status"=>"ok")));
 }
 if (isset($_POST['delete_this_pad']) && isset($_POST['pad_id'])) {
