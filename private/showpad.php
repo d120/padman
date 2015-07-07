@@ -26,7 +26,7 @@ if(!$instance) exit;
   $result = $instance->getText($padID);
   $fn = JsonDB::$DATA_DIR."index/".urlencode($group)."/".urlencode($padname).".txt";
   @mkdir(JsonDB::$DATA_DIR."index"); @mkdir(dirname($fn));
-  file_put_contents($fn, $result);
+  file_put_contents($fn, $result->text);
   
   
     if ($public->publicStatus) {
