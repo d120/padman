@@ -21,6 +21,14 @@ if(!$instance) exit;
     return;
   }
   
+  
+  //cache content
+  $result = $instance->getText($padID);
+  $fn = JsonDB::$DATA_DIR."index/".urlencode($group)."/".urlencode($padname).".txt";
+  @mkdir(JsonDB::$DATA_DIR."index"); @mkdir(dirname($fn)); echo $fn;
+  file_put_contents($fn, $result);
+  
+  
     if ($public->publicStatus) {
       $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
     } else{
