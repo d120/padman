@@ -21,6 +21,7 @@ if(!$instance) exit;
     return;
   }
   
+  if ($password) setcookie("password", $password, 0, "/pad/p/".$padID);
   
   //cache content
   $result = $instance->getText($padID);
@@ -65,4 +66,3 @@ if(!$instance) exit;
   include "template-modal-options.html";
   echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group . '"); </script>';
   
-  if ($password) echo "<script> autoFillPassword = ".json_encode($password)."; </script>";
