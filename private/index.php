@@ -95,6 +95,10 @@ foreach ($author_groups as $group_name) {
 
 setcookie('sessionID', implode(",",$sessions), $validUntil, '/', HOST_NAME);
 
+if (isset($_GET['q'])) {
+  require "showsearch.php";
+  exit;
+}
 
 if (isset($_GET['show'])) {
   require "showpad.php";

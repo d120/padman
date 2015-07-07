@@ -67,17 +67,24 @@ if ($i > 8) {
 }
 ?>
         <li><a href="<?= ADD_GROUP_LINK ?>"><i class="glyphicon glyphicon-plus"></i></a></li>
-     </ul>
+      </ul>
       <ul class="nav navbar-nav navbar-right">
       	<?php load_view("login_info", $login); ?>
       </ul>
+      <?php if (ALLOW_SEARCH): ?>
+      <form class="navbar-form navbar-right" role="search" action="<?= SELF_URL?>" method="get">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q">
+        </div>
+      </form>
+      <?php endif; ?>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
 <?= isset($infoBox) ? $infoBox : '' ?>
 
-
+<?php if(isset($content)) { echo $content; } else { ?>
 <div class="panel panel-default">
   <div class="panel-heading">Vorhandene Pads für Gruppe: <b><code><?=$current_group?></code></b>
 		 <form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$current_group?>" method="POST">
@@ -102,6 +109,7 @@ if ($i > 8) {
      Eile mit Weile ...
    </ul>
 </div>
+<?php } ?>
 
 </div>
 
