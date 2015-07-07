@@ -38,7 +38,6 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Gruppen</a>
     </div>
 
     <div class="collapse navbar-collapse" id="grouplist-navbar">
@@ -74,7 +73,7 @@ if ($i > 8) {
       <?php if (ALLOW_SEARCH): ?>
       <form class="navbar-form navbar-right" role="search" action="<?= SELF_URL?>" method="get">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q">
+          <input type="text" class="form-control" placeholder="Search" name="q" style="width: 150px;">
         </div>
       </form>
       <?php endif; ?>
