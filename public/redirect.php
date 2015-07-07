@@ -3,14 +3,15 @@
 include "../config.inc.php";
 include "../jsondb.inc.php";
 
+$sldb = new JsonDB('shortlnk');
+
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
 	$url = $_SERVER["REDIRECT_SCRIPT_URL"];
 }
 if (isset($_GET["lnk"])) $url = $_GET["lnk"];
 
 if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
-    $p = loadJson("shortlnk");
-    foreach($p as $k=>$v) {
+    foreach($sldb->p as $k=>$v) {
       if ($v == $res[1]) {
         //header("Location: ".PAD_URL. $k);
 	header("HTTP/1.1 200 So fluffy");
