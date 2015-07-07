@@ -61,7 +61,8 @@ if(!$instance) exit;
     </div><div class='content col-sm-4'>$shortlnk</div></div>";
   
   echo "</div>";
-  echo '<iframe id="padview_iframe" src="'.$padurl.$padID.'"></iframe>';
+  echo '<iframe id="padview_iframe" src="/pad/p/'.$padID.'"></iframe>';
   include "template-modal-options.html";
   echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group . '"); </script>';
-
+  
+  if ($password) echo "<script> autoFillPassword = ".json_encode($password)."; </script>";

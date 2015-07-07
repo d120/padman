@@ -4,14 +4,16 @@ class JsonDB {
   
   public static $DATA_DIR;
   public $p;
+  public $filename;
   
   public function __construct($filename) {
+    $this->filename = $filename;
     $this->p = JsonDB::load($filename);
   }
   
   public function store($key, $value) {
     $this->p[$key] = $value;
-    file_put_contents(JsonDB::$DATA_DIR.$filename.'.json', json_encode($this->p));
+    file_put_contents(JsonDB::$DATA_DIR.$this->filename.'.json', json_encode($this->p));
   }
   
   public function read($key) {

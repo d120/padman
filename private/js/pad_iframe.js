@@ -31,4 +31,16 @@ document.addEventListener("DOMContentLoaded", function() {
     closebtn.addEventListener("click", show_pad_info, false);
 
     on_resize();
+    
+    if (autoFillPassword) {
+      document.domain = location.host;
+      iframe.addEventListener("load", function() {
+        var pwbox = iframe.contentWindow.document.getElementById("passwordinput");
+        pwbox.value = autoFillPassword;
+        pwbox.type = "text";
+        setTimeout(function() {
+          //pwbox.parentNode.childNodes[2].click();
+        },1000)
+      }, false);
+    }
 }, false);
