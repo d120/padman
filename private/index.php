@@ -42,7 +42,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
 function setPassword($padID, $passwd) {
   global $instance;
   $ok=$instance->setPassword($padID, $passwd);
-  storeJson('passwords', $padID, $passwd);
+  (new JsonDB('passwords'))->store($padID, $passwd);
   return $ok;
 }
 
@@ -143,8 +143,8 @@ if (isset($_GET['list_pads'])) {
     } else{
       $PAD["icon_html"] = '<span class="glyphicon glyphicon-home"></span> '; $PAD["public"]="false";
     }
-    $PAD["passw"] = readJson('passwords', $padID);
-    $PAD["shortlnk"] = readJson('shortlnk', $padID);
+    $PAD["passw"] = (new JsonDB('passwords'))->read($padID);
+    $PAD["shortlnk"] = (new JsonDB('shortlnk'))->read($padID);
     if ($PAD["shortlnk"]) $PAD["shortlnk"] = SHORTLNK_PREFIX.$PAD["shortlnk"];
     
     load_view("pad_list_item", $PAD);

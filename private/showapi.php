@@ -1,4 +1,5 @@
 <?php
+$sldb = new JsonDB('shortlnk');
 
 // JSON api
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
@@ -10,7 +11,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
     if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
     if (!$sl) $sl = substr(md5($padname),0,7);
   }
-  storeJson('shortlnk', $padname, $sl);
+  $sldb->store('shortlnk', $padname, $sl);
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
@@ -34,8 +35,9 @@ if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
     die(json_encode(array("status"=>"error", "msg"=>"$ex")));
   }
 
-  moveJson('passwords', $padname, $_POST['rename']);
-  moveJson('shortlnk', $padname, $_POST['rename']);
+  $pwdb = new JsonDB('passwords');
+  $pwdb->move($padname, $_POST['rename']);
+  $sldb->move($padname, $_POST['rename']);
   
   die(json_encode(array("status"=>"ok")));
 }
@@ -55,7 +57,7 @@ if (isset($_POST['createPadinGroup'])) {
   try {
     $instance->createGroupPad($groupmap[$group], $padname, '');
     if (isset($_POST['start_sitzung'])) {
-      storeJson('shortlnk', $groupmap[$group] . '$' . $padname, 'si'.date('md'));
+      $sldb->store($groupmap[$group] . '$' . $padname, 'si'.date('md'));
       $instance->setPublicStatus($groupmap[$group] . '$' . $padname, true);
       setPassword($groupmap[$group] . '$' . $padname, $passwd);
       
