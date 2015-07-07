@@ -11,7 +11,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
     if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
     if (!$sl) $sl = substr(md5($padname),0,7);
   }
-  $sldb->store('shortlnk', $padname, $sl);
+  $sldb->store($padname, $sl);
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
