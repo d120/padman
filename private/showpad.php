@@ -4,10 +4,13 @@ if(!$instance) exit;
   $padname = htmlspecialchars($_GET['show']);
   //header("Location: ".$padurl.$padname); #+$padurl+$padname);
   $padID = $groupmap[$group].'$'.$padname;
-  $password = readJson('passwords', $groupmap[$group].'$'.$padname);
+  
+  $pwdb = new JsonDB('passwords');
+  $password = $pwdb->read($groupmap[$group].'$'.$padname);
   $passw = "";
   if ($password) $passw = "Passwort: <input type='text' value='$password' readonly ondblclick='event.stopPropagation();return false' onclick='this.select()' id='padview_pw'>";
-  $shortnam = readJson('shortlnk', $groupmap[$group].'$'.$padname);
+  $sldb = new JsonDB('shortlnk');
+  $shortnam = $sldb->read($groupmap[$group].'$'.$padname);
   $shortlnk = "";
   if ($shortnam) $shortlnk = "Kurz-Link: <br><b><a href='".SHORTLNK_PREFIX."$shortnam' class='elipsis'>".SHORTLNK_PREFIX."$shortnam</a></b>";
   try {
@@ -17,6 +20,7 @@ if(!$instance) exit;
     load_view("pad_not_found", array("pad" => "$group/$padname"));
     return;
   }
+  
     if ($public->publicStatus) {
       $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
     } else{

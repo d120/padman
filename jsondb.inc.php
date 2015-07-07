@@ -1,26 +1,34 @@
 <?php
 
-define("DATA_DIR", dirname(__FILE__)."/data/");
+class JsonDB {
+  
+  public static $DATA_DIR;
+  public $p;
+  
+  public function __construct($filename) {
+    $this->p = JsonDB::load($filename);
+  }
+  
+  public function store($key, $value) {
+    $this->p[$key] = $value;
+    file_put_contents(JsonDB::$DATA_DIR.$filename.'.json', json_encode($this->p));
+  }
+  
+  public function read($key) {
+    return isset($this->p[$key]) ? $this->p[$key] : '';
+  }
+  
+  public static function load($filename) {
+    $p=@json_decode(file_get_contents(JsonDB::$DATA_DIR.$filename.'.json'),true);
+    if (!is_array($p)) $p=array();
+    return $p;
+  }
+  
+  public function move($oldkey, $newkey) {
+    $this->store($newkey, $this->read($oldkey));
+    $this->store($oldkey, null);
+  }
 
-function storeJson($filename, $key, $value) {
-  $p=loadJson($filename);
-  $p[$key] = $value;
-  file_put_contents(DATA_DIR.$filename.'.json', json_encode($p));
 }
 
-function readJson($filename, $key) {
-  $p=loadJson($filename);
-  return isset($p[$key]) ? $p[$key] : '';
-}
-
-function loadJson($filename) {
-  $p=@json_decode(file_get_contents(DATA_DIR.$filename.'.json'),true);
-  if (!is_array($p)) $p=array();
-  return $p;
-}
-
-function moveJson($filename, $oldkey, $newkey) {
-  storeJson($filename, $newkey, readJson($filename, $oldkey));
-  storeJson($filename, $oldkey, null);
-}
-
+JsonDB::$DATA_DIR = dirname(__FILE__)."/data/";
