@@ -1,1 +1,1 @@
-        <li style="font-size:8.5pt; color:#999;"><br>Benutzer: <?= $cn ?><br>Alias: <?= $name ?></li>
+        <li style=" color:#999;"><span class="glyphicon glyphicon-user"></span> <?= $name ? $name : $cn ?></li>
