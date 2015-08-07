@@ -42,3 +42,9 @@ background: -moz-linear-gradient(top, #e2e2e2 0%, #dbdbdb 50%, #d1d1d1 51%, #fef
 #padview_info.collapsed .x { padding: 5px 18px; }
 .elipsis { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: block; }
 .title { padding-top: 4px; font-weight: bold; }
+
+@media screen and (min-width: 768px) {
+    #grouplist-navbar { padding-left: 0; }
+}
+
+#pad_passw:invalid { outline:2px solid red;color:red; }
