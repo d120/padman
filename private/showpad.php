@@ -55,7 +55,8 @@ if(!$instance) exit;
     <a href='#' class='imgbutton pad_opts' title='Pad Properties'><span class='glyphicon glyphicon-cog'></span></a>";
   if ($shortlnk)
     echo "  <a href='mailto:?subject=Etherpad&body=Hallo,%0a%0ahier der Link zum Pad:%0a".SHORTLNK_PREFIX."$shortnam%0aPasswort:%20$password%0a%0aViele%20Grüße,%0a%0a' title='Share' class='imgbutton'><span class='glyphicon glyphicon-share'></span></a>";
-  echo "<a class='imgbutton last' href='?pad_id=$padID&export=wiki' onclick='return export_popup(this.href);' title='Wiki Export'><span class='glyphicon glyphicon-export'></span></a>";
+  echo "<a class='imgbutton' href='?pad_id=$padID&export=wiki' onclick='return export_popup(this.href);' title='Wiki Export'><span class='glyphicon glyphicon-export'></span></a>";
+  echo "<a class='imgbutton last' href='?pad_id=$padID&export=mdhtml' onclick='return export_popup(this.href);' title='Markdown Export'><span class='glyphicon glyphicon-text-size'></span></a>";
 
   echo "<div class='title elipsis'><a href='?group=$group'>$group</a> &#187; $padname $tags  </div>
     <div class='elipsis'>".$padurl.$groupmap[$group].'$'.$padname."</div> </div></div><div class='content col-sm-3'>$passw
