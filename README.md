@@ -5,17 +5,29 @@ to config.inc.php and change the configuration appropriately.
 
 ## Server configuration
 
-The web server must redirect all requests to index.php. For example, with nginx:
+The web server must redirect all requests to index.php. Additionally, a htaccess
+authentication is required if only registered users should be able to create new
+pads. (This is the default configuration, see "ALLOW_ANON_PAD_CREATE" in config.php.)
+
+A configuration with authentication for nginx could look like:
 
 ```
-        location / {
-                try_files $uri $uri/ /index.php?$args;
-        }
+location / {
+  auth_basic "Padman";
+  auth_basic_user_file /path/to/the/pad/.htpasswd;
+
+  try_files $uri $uri/ /index.php?$args;
+}
 ```
 
-Or with Apache:
+And for Apache:
 
 ```
+AuthType Basic
+AuthName "Padman"
+AuthUserFile /path/to/the/pad/.htpasswd
+require valid-user
+                
 RewriteEngine On
 RewriteBase /
 RewriteRule ^index\.php$ - [L]
