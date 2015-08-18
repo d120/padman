@@ -48,3 +48,8 @@ background: -moz-linear-gradient(top, #e2e2e2 0%, #dbdbdb 50%, #d1d1d1 51%, #fef
 }
 
 #pad_passw:invalid { outline:2px solid red;color:red; }
+
+.modal-dialog {
+  z-index: 1050;
+}
+
