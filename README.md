@@ -3,6 +3,24 @@
 To install, git clone this repository into your www root. Rename config.inc.php.template 
 to config.inc.php and change the configuration appropriately.
 
+## Server configuration
+
+The web server must redirect all requests to index.php. For example, with nginx:
+
+```
+        location / {
+                try_files $uri $uri/ /index.php?$args;
+        }
+```
+
+Or with Apache:
+
+```
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+```
+
 ## Links
 
 * [etherpad-lite](https://github.com/ether/etherpad-lite/)
