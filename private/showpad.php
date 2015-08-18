@@ -53,10 +53,7 @@ if(!$instance) exit;
     <div class='content'>
     <a href='".SELF_URL."' class='imgbutton' title='Go to Pad Index'><span class='glyphicon glyphicon-home'></span></a>
     <a href='#' class='imgbutton pad_opts' title='Pad Properties'><span class='glyphicon glyphicon-cog'></span></a>";
-  if ($shortlnk)
-    echo "  <a href='mailto:?subject=Etherpad&body=Hallo,%0a%0ahier der Link zum Pad:%0a".SHORTLNK_PREFIX."$shortnam%0aPasswort:%20$password%0a%0aViele%20Grüße,%0a%0a' title='Share' class='imgbutton'><span class='glyphicon glyphicon-share'></span></a>";
-  echo "<a class='imgbutton' href='?pad_id=$padID&export=wiki' onclick='return export_popup(this.href);' title='Wiki Export'><span class='glyphicon glyphicon-export'></span></a>";
-  echo "<a class='imgbutton last' href='?pad_id=$padID&export=mdhtml' onclick='return export_popup(this.href);' title='Markdown Export'><span class='glyphicon glyphicon-text-size'></span></a>";
+  echo "<a class='imgbutton last pad_export' href='#' title='Export'><span class='glyphicon glyphicon-export'></span></a>";
 
   echo "<div class='title elipsis'><a href='?group=$group'>$group</a> &#187; $padname $tags  </div>
     <div class='elipsis'>".$padurl.$groupmap[$group].'$'.$padname."</div> </div></div><div class='content col-sm-3'>$passw
@@ -64,6 +61,7 @@ if(!$instance) exit;
   
   echo "</div>";
   echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
-  include "template-modal-options.html";
+  load_view("modal_options", array());
+  load_view("modal_export", array("padID"=>$padID, "shortlnk" => $shortlnk, "shortnam" => $shortnam, "password" => $password));
   echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group . '"); </script>';
   

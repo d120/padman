@@ -41,7 +41,7 @@
     </div>
 
     <div class="collapse navbar-collapse" id="grouplist-navbar">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav" id="main_nav">
 
 
 <?php
@@ -54,7 +54,7 @@ foreach($group_titles as $name){
 	}
 	$url = SELF_URL.strtolower($name);
 	if ($current_group === strtolower($name)) {
-		echo "<li class=\"active\"><a href=\"$url\">".$name."</a></li>";
+		echo "<li data-id=\"".strtolower($name)."\" class=\"active\"><a href=\"$url\">".$name."</a></li>";
 	}
 	else {
 		echo "<li data-id=\"".strtolower($name)."\"><a href=\"$url\">".$name."</a></li>";
@@ -85,22 +85,22 @@ if ($i > 8) {
 
 <?php if(isset($content)) { echo $content; } else { ?>
 <div class="panel panel-default">
-  <div class="panel-heading">Vorhandene Pads für Gruppe: <b><code><?=$current_group?></code></b>
-		 <form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$current_group?>" method="POST">
+  <div class="panel-heading">Vorhandene Pads für Gruppe: <b><code id="cur_group_name"><?=$current_group?></code></b>
+		 <form class="panel-header-form form-inline group_form" action="javascript:invalid" method="POST">
 
 <?php if ($allow_pad_create): ?>
 		<div class="form-group-sm">
-		     <input type="text" class="form-control" placeholder="neues Pad in <?=$current_group?>" name="pad_name">
-		   <button type="submit" class="btn btn-sm <?= ($current_group == "sitzung" ? "btn-default" : "btn-success") ?>" name="createPadinGroup">Pad erstellen</button>
+		     <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name">
+		   <button type="submit" class="btn btn-sm btn-success" name="createPadinGroup">Pad erstellen</button>
 		</div>
 		 </form>
-<?php if ($current_group == "sitzung"): ?>
-		<form class="panel-header-form form-inline" action="<?=SELF_URL?>?group=<?=$current_group?>" method="POST" id="createSitzungPadForm">
+
+		<form class="panel-header-form form-inline group_form" action="javascript:invalid" method="POST" id="createSitzungPadForm" style="display:none">
 		<input type="hidden" name="start_sitzung" value="true">
     <input type="hidden" name="createPadinGroup" value="1" />
-		<button type="submit" class="btn btn-sm btn-success" id="createSitzungPad"><i class="glyphicon glyphicon-leaf"></i> Sitzung starten</button>
+		<button type="submit" class="btn btn-sm btn-info" id="createSitzungPad"><i class="glyphicon glyphicon-leaf"></i> Sitzung starten</button>
 		</form>
-<?php endif; ?>
+
 <?php endif; ?>
 </div>
 
@@ -112,7 +112,7 @@ if ($i > 8) {
 
 </div>
 
-<?php include "template-modal-options.html"; ?>
+<?php load_view("modal_options"); ?>
 
 <div class="modal fade" id="modal_sitzungconfirm">
   <div class="modal-dialog">

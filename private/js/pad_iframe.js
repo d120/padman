@@ -31,4 +31,9 @@ document.addEventListener("DOMContentLoaded", function() {
     closebtn.addEventListener("click", show_pad_info, false);
 
     on_resize();
+    
+    $(".pad_export").click(function() {
+        $("#modal_export").modal("show");
+    });
 }, false);
+

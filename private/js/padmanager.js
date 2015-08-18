@@ -1,6 +1,15 @@
 function PadManager(self_url, group) {
   var self = this;
 
+  $('#main_nav [data-id]').click(function() {
+    if (!$('#pad_list').length) return;
+    group = this.getAttribute("data-id");
+    $('#main_nav li.active').removeClass('active'); $(this).addClass('active');
+    loadPadList();
+    window.history.pushState('', 'Pad: '+group, self_url + group);
+    return false;
+  });
+
   $(document).on('click', ".open_popup", function(e) {
     window.open($(e.target).closest("a").attr('href'), "", "width=auto,height=auto,toolbar=no,status=no,resizable=yes");
     return false;
@@ -178,6 +187,10 @@ function PadManager(self_url, group) {
                                   });
       
     }, "html");
+    $("#createSitzungPadForm").toggle(group == "sitzung");
+    $("#cur_group_name").text(group);
+    $(".group_form").attr("action", self_url + "?group=" + escape(group));
+    $(".create_pad_name").attr("placeholder", "neues Pad in " + group);
   }
   
   this.loadPadList = loadPadList;

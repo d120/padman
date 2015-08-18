@@ -7,11 +7,12 @@ if (!$instance) exit;
 
 ?>
 <link rel="stylesheet" href="https://static.luelistan.net/bootstrap-3.3.2-dist/css/bootstrap.min.css">
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic' rel='stylesheet' type='text/css'>
 <style>
 @media print {
   .container { width: auto; } a::after { display: none; } a { text-decoration: underline!important; }
 }
-.container {text-align:justify}
+.container {text-align:justify; font-family: 'Open Sans', sans-serif; }
 img {max-width:100%}
 </style>
 <script src="js/marked.js"></script>
