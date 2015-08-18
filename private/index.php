@@ -8,7 +8,9 @@ include "../config.inc.php";
 include "../jsondb.inc.php";
 include "../views.inc.php";
 include "etherpad-lite-client.php";
-$shown_groups = array_map("strtolower", $shown_groups_titles);
+
+$group_titles = $GROUP_TITLES;
+$group_keys = array_map("strtolower", $group_titles);
 $infoBox = "";
 
 if ($_SERVER["HTTP_HOST"] != HOST_NAME) {
@@ -18,7 +20,7 @@ if ($_SERVER["HTTP_HOST"] != HOST_NAME) {
 
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
   $url = $_SERVER["REDIRECT_SCRIPT_URL"];
-  if (preg_match('#^/pad/(.*)$#', $url, $res) && array_search($res[1], $shown_groups) !== FALSE) {
+  if (preg_match('#^/pad/(.*)$#', $url, $res) && array_search($res[1], $group_keys) !== FALSE) {
     header("HTTP/1.1 200 OK");
     $_GET["group"] = $res[1];
   } elseif (preg_match('#^/pad/p/(Sitzung.*)$#', $url, $res)) {
@@ -28,7 +30,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     $padID = $res[1];
     header("Location: ".SELF_URL."?group=fachschaft&show=$padID");
     exit;
-  } elseif (preg_match('#^/pad/(.*)/(.*)$#', $url, $res) && array_search($res[1], $shown_groups) !== FALSE) {
+  } elseif (preg_match('#^/pad/(.*)/(.*)$#', $url, $res) && array_search($res[1], $group_keys) !== FALSE) {
     header("HTTP/1.1 200 OK");
     $_GET["group"] = $res[1];
     $_GET["show"] = $res[2];
@@ -62,9 +64,9 @@ if (file_exists("/home/" . $author_cn . "/.padname")) {
 //$author_cn = $_SERVER['HTTP_AUTH_CN'];
 //$groups = "sitzung; fachschaft; inforz; ophase"; //base64_decode($_SERVER['HTTP_AUTH_GROUPS']);
 //$author_groups = preg_split("/[\s;]+/", $groups);
-$author_groups = $shown_groups;
+$author_groups = $group_keys;
 
-$author_groups = array_intersect($author_groups, $shown_groups);
+$author_groups = array_intersect($author_groups, $group_keys);
 
 if (isset($_GET['group'])) $group = $_GET['group'];
 else $group = $author_groups[0];
@@ -165,7 +167,7 @@ if (isset($_COOKIE["infobox"])) {
 }
 
 load_view("layout", array(
-  "group_titles" => $shown_groups_titles, "groupmap" => $groupmap, "current_group" => $group, "allow_pad_create" => $allow_pad_create,
+  "group_titles" => $group_titles, "groupmap" => $groupmap, "current_group" => $group, "allow_pad_create" => $allow_pad_create,
   "login" => array("cn" => $author_cn, "name" => $author_name)
 ));
 
