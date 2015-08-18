@@ -50,6 +50,7 @@ $padurl = PAD_URL;
 
 $instance = new EtherpadLiteClient(API_KEY, API_URL);
 
+$allow_pad_create = false;
 if (isset($_SERVER['PHP_AUTH_USER']) || ALLOW_ANON_PAD_CREATE) $allow_pad_create = true;
 
 $author_cn = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : 'anonymous_'.substr(md5($_SERVER["REMOTE_ADDR"]),0,10));
