@@ -8,7 +8,7 @@ $out = preg_replace("/^\\.\\/([^\\/]+)\\/([^:]+)\\.txt:([0-9]+):/m", "<a href='?
 $content = "<h3>Suchergebnisse für <b>".htmlentities($_GET["q"])."</b></h2><pre>".$out."</pre>";
 
 load_view("layout", array(
-  "group_titles" => $shown_groups_titles, "groupmap" => $groupmap, "current_group" => null, "allow_pad_create" => false,
+  "group_titles" => $group_titles, "groupmap" => $groupmap, "current_group" => null, "allow_pad_create" => false,
   "login" => array("cn" => $author_cn, "name" => $author_name), "content" => $content
 ));
 

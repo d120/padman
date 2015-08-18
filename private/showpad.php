@@ -44,7 +44,7 @@ if(!$instance) exit;
     html, body { margin: 0; padding: 0; }
     </style>
     <script src='js/jquery.js'></script>
-    <script src='js/bootstrap.js'></script>
+    <script src='js/bootstrap.min.js'></script>
     <script src='js/padmanager.js'></script>
     <script src='js/pad_iframe.js'></script>
     <div id='padview_info' data-padID='$padID' data-public='$public' data-shortlnk='$shortnam' data-passw='$password'>

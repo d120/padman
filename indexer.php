@@ -3,7 +3,7 @@
 include "config.inc.php";
 include "jsondb.inc.php";
 include "private/etherpad-lite-client.php";
-$shown_groups = array_map("strtolower", $shown_groups_titles);
+$shown_groups = array_map("strtolower", $GROUP_TITLES);
 
 $instance = new EtherpadLiteClient(API_KEY, API_URL);
 
