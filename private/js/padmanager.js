@@ -194,9 +194,9 @@ function PadManager(self_url, group) {
       
       if (!selected_tag) {
         var $tags = $("#taglist").html("&nbsp;");
-        $tags.append("<span class='label label-primary'>(alle)</span> ");
+        $tags.append("<span class='btn btn-xs btn-primary'>(alle)</span> ");
         result.tags.forEach(function(tag) {
-          $tags.append("<span class='label label-default'>"+tag+"</span> ");
+          $tags.append("<span class='btn btn-xs btn-default'>"+tag+"</span> ");
         });
       }
     }, "json");
