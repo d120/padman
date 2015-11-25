@@ -207,8 +207,8 @@ function PadManager(self_url, group) {
   }
   
   $("#taglist").click(function(e) {
-    $("#taglist span").attr("class", "label label-default");
-    var $tag = $(e.target).attr("class", "label label-primary");
+    $("#taglist span").attr("class", "btn btn-xs btn-default");
+    var $tag = $(e.target).attr("class", "btn btn-xs btn-primary");
     selected_tag = $tag.text();
     if (selected_tag == "(alle)") selected_tag = "";
     loadPadList();
