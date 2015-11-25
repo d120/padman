@@ -50,7 +50,8 @@ if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
   }
 
   $p = explode('$', $_POST['rename']);
-  update_pad($padname, array('group_id' => $p[0], 'pad_name' => $p[1]));
+  $new_group_mapper = sql("SELECT group_mapper FROM padman_group_cache WHERE group_id=?", array($p[0]))[0]['group_mapper'];
+  update_pad($padname, array('group_mapper' => $new_group_mapper, 'group_id' => $p[0], 'pad_name' => $p[1]));
 
   die(json_encode(array("status"=>"ok")));
 }

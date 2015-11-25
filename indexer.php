@@ -37,7 +37,7 @@ foreach($groupmap as $group => $groupID) {
   echo "Indexing pads in group \"$group\" ";
   
   $delQuery="DELETE FROM padman_pad_cache WHERE group_id = ".$db->quote($groupID);
-  
+  $tags = array();
   foreach ($pads->padIDs as $padID) {
     $parts=explode('$',$padID); $padname = $parts[1];
     $delQuery.=" AND pad_name<>".$db->quote($padname);
@@ -58,7 +58,7 @@ foreach($groupmap as $group => $groupID) {
     
     $getTagsQ->execute(array($group, $padname));
     $thistags = explode(" ",$getTagsQ->fetchColumn());
-    $tags = array_merge($thistags);
+    $tags = array_merge($tags, $thistags);
   }
   $db->exec($delQuery);
   

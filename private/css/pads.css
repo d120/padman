@@ -3,6 +3,8 @@
 .top_logo { position:absolute; right: 20px; top: 5px; z-index: 100; }
 .top_colorbar { height: 8px; }
 
+#taglist span { cursor: pointer; }
+
 #grouplist-navbar li.ui-state-hover { outline: 1px solid green; }
 #grouplist-navbar li.ui-state-active { background: #ddffdd; }
 .ui-draggable-dragging { width: 400px; z-index: 2000; }
