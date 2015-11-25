@@ -21,6 +21,7 @@ if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
       	echo "<style>   html,body {margin:0;padding:0;height:100%;overflow:hidden;}
            iframe { width: 100%; height: 100%; border: 0; }   </style>
            </head><body>\n";
+        echo '<div style="padding: 5px; position: absolute; bottom: 0; left: 10px; background: #bbb;"><a href="/pad/?group='.htmlentities(urlencode(PAD_URL)).'">Login</a></div>';
       	echo '<iframe src="'.PAD_URL. $k.'"></iframe></body></html>';
         exit;
       }

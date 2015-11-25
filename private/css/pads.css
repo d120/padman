@@ -45,6 +45,10 @@ background: -moz-linear-gradient(top, #e2e2e2 0%, #dbdbdb 50%, #d1d1d1 51%, #fef
 
 @media screen and (min-width: 768px) {
     #grouplist-navbar { padding-left: 0; }
+  nav.navbar { padding-left: 5px; padding-right: 20px; }
+}
+@media screen and (max-width: 991px) {
+  .navbar .nav>li>a { padding-left: 4px; padding-right: 4px; }
 }
 
 #pad_passw:invalid { outline:2px solid red;color:red; }

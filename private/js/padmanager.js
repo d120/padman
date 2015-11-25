@@ -1,9 +1,10 @@
 function PadManager(self_url, group) {
   var self = this;
-
+  var selected_tag = "";
+  
   $('#main_nav [data-id]').click(function() {
-    if (!$('#pad_list').length) return;
-    group = this.getAttribute("data-id");
+    if (!$('#pad_list').length) return false;
+    group = this.getAttribute("data-id"); selected_tag = "";
     $('#main_nav li.active').removeClass('active'); $(this).addClass('active');
     loadPadList();
     window.history.pushState('', 'Pad: '+group, self_url + group);
@@ -34,6 +35,7 @@ function PadManager(self_url, group) {
     if (is_public == "true")
       $("#pad_shortlink").val($line.attr("data-shortlnk"));
     $("#pad_passw").val($line.attr("data-passw"));
+    $("#pad_tags").val($line.attr("data-tags"));
 
     var shortName = currentEditPadID.substr(currentEditPadID.indexOf("$")+1);
     $dlg.find(".modal-title").html("Einstellungen zum Pad <b><u>"+shortName+"</u></b>");
@@ -44,7 +46,7 @@ function PadManager(self_url, group) {
   }
 
   window.onscroll = function() {
-    if (window.scrollY > 110) $(".navbar").addClass("navbar-fixed-top");
+    if (window.scrollY > 120 && window.innerWidth > 768) $(".navbar").addClass("navbar-fixed-top");
     else $(".navbar").removeClass("navbar-fixed-top");
   }
   
@@ -62,9 +64,9 @@ function PadManager(self_url, group) {
       if (!$("#pad_passw").val()) {
         var random = ("00000"+Math.floor(Math.random()*100000));
         random = random.substr(random.length-5);
-      $("#pad_passw").val(random);
-    }
-    savePassword();
+        $("#pad_passw").val(random);
+      }
+      savePassword();
   });
 
   $("#passw_clear").click(function() {
@@ -79,6 +81,10 @@ function PadManager(self_url, group) {
     }, "json");
   }
 
+  $("#pad_tags").change(function() {
+    $.post(self_url, { "pad_id" : currentEditPadID, "set_tags" : $("#pad_tags").val() });
+  });
+  
   $("#edit_shortlink").click(function() {
     var shortlnk = $("tr[data-padid='"+currentEditPadID+"']").attr("data-shortlnk");
     shortlnk = shortlnk.replace(/^.*\//, '');
@@ -158,6 +164,7 @@ function PadManager(self_url, group) {
     var x=0,progress=setInterval(function (){ $("#modal_rename .progress-bar").css("width",x+"%"); x++; }, 100);
     $.post(self_url, { "pad_id" : oldID, "rename" : newID },
     function(data) {
+      if (data.msg) alert(data.msg);
       clearInterval(progress);
       loadPadList();
       $("#modal_rename").modal("hide");
@@ -179,19 +186,33 @@ function PadManager(self_url, group) {
   
   function loadPadList() {
     $("#pad_list").html("<div class='loader'></div>");
-    $.get(self_url + "?group=" + group + "&list_pads=1", function(result) {
-      $("#pad_list").html(result);
-
-      $("#pad_list tr").draggable({ handle: ".pad_icon", revert: true, helper: "clone",
-                                    cursorAt: { top: 15, left: 15 }, opacity: 0.7
-                                  });
+    $.get(self_url + "?group=" + group + "&list_pads=1&tag=" + selected_tag, function(result) {
+      $("#pad_list").html(result.html);
       
-    }, "html");
+      $("#pad_list tr").draggable({ handle: ".pad_icon", revert: true, helper: "clone",
+                                    cursorAt: { top: 15, left: 15 }, opacity: 0.7  });
+      
+      if (!selected_tag) {
+        var $tags = $("#taglist").html("&nbsp;");
+        $tags.append("<span class='label label-primary'>(alle)</span> ");
+        result.tags.forEach(function(tag) {
+          $tags.append("<span class='label label-default'>"+tag+"</span> ");
+        });
+      }
+    }, "json");
     $("#createSitzungPadForm").toggle(group == "sitzung");
     $("#cur_group_name").text(group);
     $(".group_form").attr("action", self_url + "?group=" + escape(group));
     $(".create_pad_name").attr("placeholder", "neues Pad in " + group);
   }
+  
+  $("#taglist").click(function(e) {
+    $("#taglist span").attr("class", "label label-default");
+    var $tag = $(e.target).attr("class", "label label-primary");
+    selected_tag = $tag.text();
+    if (selected_tag == "(alle)") selected_tag = "";
+    loadPadList();
+  });
   
   this.loadPadList = loadPadList;
 }

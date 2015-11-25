@@ -1,5 +1,4 @@
 <?php
-$sldb = new JsonDB('shortlnk');
 
 // JSON api
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
@@ -11,7 +10,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
     if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
     if (!$sl) $sl = substr(md5($padname),0,7);
   }
-  $sldb->store($padname, $sl);
+  update_pad($padname, array('shortlink' => $sl));
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
@@ -24,9 +23,24 @@ if (isset($_POST['delete_this_pad']) && isset($_POST['pad_id'])) {
       die(json_encode(array("status"=>"access_denied")));
   $padname = $_POST['pad_id'];
   $ok=$instance->deletePad($padname);
+  
+  $padid=explode('$',$padname);
+  $db->prepare("DELETE FROM padman_pad_cache  WHERE group_id=? AND pad_name=?")
+     ->execute(array($padid[0], $padid[1]));
+  
   die(json_encode(array("status"=>"ok")));
 }
 
+if (isset($_POST['set_tags']) && isset($_POST['pad_id'])) {
+  $padname = $_POST['pad_id'];
+  update_pad($padname, array('tags' =>
+                      preg_replace('/[^a-zA-Z0-9 ]/','',
+                      preg_replace('/[ ,;]+/',' ',
+                            $_POST['set_tags']
+                  ))));
+
+  die(json_encode(array("status"=>"ok")));
+}
 if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
   try {
@@ -35,10 +49,9 @@ if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
     die(json_encode(array("status"=>"error", "msg"=>"$ex")));
   }
 
-  $pwdb = new JsonDB('passwords');
-  $pwdb->move($padname, $_POST['rename']);
-  $sldb->move($padname, $_POST['rename']);
-  
+  $p = explode('$', $_POST['rename']);
+  update_pad($padname, array('group_id' => $p[0], 'pad_name' => $p[1]));
+
   die(json_encode(array("status"=>"ok")));
 }
 
@@ -56,17 +69,21 @@ if (isset($_POST['createPadinGroup'])) {
 
   try {
     $instance->createGroupPad($groupmap[$group], $padname, '');
+    $padid = $groupmap[$group] . '$' . $padname;
+    $db->prepare('INSERT INTO padman_pad_cache (group_mapper, group_id, pad_name, last_edited) VALUES (?,?,?,NOW())')
+       ->execute(array($group, $groupmap[$group], $padname));
     if (isset($_POST['start_sitzung'])) {
-      $sldb->store($groupmap[$group] . '$' . $padname, 'si'.date('md'));
-      $instance->setPublicStatus($groupmap[$group] . '$' . $padname, true);
-      setPassword($groupmap[$group] . '$' . $padname, $passwd);
+      update_pad($padid, array("shortlink" => 'si'.date('md')));
+      $instance->setPublicStatus($padid, true);
+      setPassword($padid, $passwd);
       
       $starttext = file_get_contents('template-sitzung.txt');
       $starttext = str_replace("{{heute}}", date("d.m.Y"), $starttext);
       $starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
-      // $starttext = nl2br($starttext);
-      $instance->setText($groupmap[$group] . '$' . $padname, $starttext);
+      
+      $instance->setText($padid, $starttext);
     }
+    
     setcookie("infobox", "<div class='alert alert-success'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
       <h4><i class='glyphicon glyphicon-ok-circle'></i> Pad ".$padname." erfolgreich angelegt!</h4>".
       '<p><a href="'.SELF_URL.'?group='.$group.'&show='.$padname.'" class="btn btn-success btn-lg">Jetzt öffnen</a></p>

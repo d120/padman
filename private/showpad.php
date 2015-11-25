@@ -2,39 +2,30 @@
 if(!$instance) exit;
 
   $padname = htmlspecialchars($_GET['show']);
+  $pad = sql("SELECT * FROM padman_pad_cache WHERE group_mapper=? AND pad_name=?", array($group, $padname))[0];
   //header("Location: ".$padurl.$padname); #+$padurl+$padname);
-  $padID = $groupmap[$group].'$'.$padname;
+  $padID = $pad['group_id'].'$'.$pad['pad_name'];
   
-  $pwdb = new JsonDB('passwords');
-  $password = $pwdb->read($groupmap[$group].'$'.$padname);
   $passw = "";
-  if ($password) $passw = "Passwort: <input type='text' value='$password' readonly ondblclick='event.stopPropagation();return false' onclick='this.select()' id='padview_pw'>";
-  $sldb = new JsonDB('shortlnk');
-  $shortnam = $sldb->read($groupmap[$group].'$'.$padname);
-  $shortlnk = "";
-  if ($shortnam) $shortlnk = "Kurz-Link: <br><b><a href='".SHORTLNK_PREFIX."$shortnam' class='elipsis'>".SHORTLNK_PREFIX."$shortnam</a></b>";
-  try {
-    $public = $instance->getPublicStatus($padID); $tags = "";
-  } catch(InvalidArgumentException $ex) {
-    header("HTTP/1.1 404 Not Found");
-    load_view("pad_not_found", array("pad" => "$group/$padname"));
-    return;
+  if ($pad['password']) {
+    $passw = "Passwort: <input type='text' value='$pad[password]' readonly ondblclick='event.stopPropagation();return false' onclick='this.select()' id='padview_pw'>";
+    setcookie("password", $pad['password'], 0, PAD_URL);
   }
   
-  if ($password) setcookie("password", $password, 0, PAD_URL.$padID);
+  $shortlnk = "";
+  if ($pad['shortlink']) $shortlnk = "Kurz-Link: <br><b><a href='".SHORTLNK_PREFIX.$pad['shortlink']."' class='elipsis'>".SHORTLNK_PREFIX.$pad['shortlink']."</a></b>";
   
   //cache content
   $result = $instance->getText($padID);
-  $fn = JsonDB::$DATA_DIR."index/".urlencode($group)."/".urlencode($padname).".txt";
-  @mkdir(JsonDB::$DATA_DIR."index"); @mkdir(dirname($fn));
+  $fn = DATA_DIR."/index/".urlencode($group)."/".urlencode($padname).".txt";
+  @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
   file_put_contents($fn, $result->text);
   
-  
-    if ($public->publicStatus) {
-      $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
-    } else{
-      $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false";
-    }
+  if ($pad['access_level'] == 1) {
+    $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
+  } else{
+    $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false"; $tags="";
+  }
 
   echo "<meta charset='utf8'><title>$padname - $group - d120.de/pad</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -47,7 +38,7 @@ if(!$instance) exit;
     <script src='js/bootstrap.min.js'></script>
     <script src='js/padmanager.js'></script>
     <script src='js/pad_iframe.js'></script>
-    <div id='padview_info' data-padID='$padID' data-public='$public' data-shortlnk='$shortnam' data-passw='$password'>
+    <div id='padview_info' data-padID='$padID' data-public='$public' data-shortlnk='$pad[shortlink]' data-passw='$pad[password]'>
     <div class='row'><div class='col-sm-5 noselect '>
     <a href='#' id='padview_x' class='imgbutton x' title='Toggle Menu Bar'><span class='glyphicon glyphicon-chevron-down'></span></a>
     <div class='content'>
@@ -56,12 +47,12 @@ if(!$instance) exit;
   echo "<a class='imgbutton last pad_export' href='#' title='Export'><span class='glyphicon glyphicon-export'></span></a>";
 
   echo "<div class='title elipsis'><a href='?group=$group'>$group</a> &#187; $padname $tags  </div>
-    <div class='elipsis'>".$padurl.$groupmap[$group].'$'.$padname."</div> </div></div><div class='content col-sm-3'>$passw
+    <div class='elipsis'>".$padurl.$padID."</div> </div></div><div class='content col-sm-3'>$passw
     </div><div class='content col-sm-4'>$shortlnk</div></div>";
   
   echo "</div>";
   echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
   load_view("modal_options", array());
-  load_view("modal_export", array("padID"=>$padID, "shortlnk" => $shortlnk, "shortnam" => $shortnam, "password" => $password));
+  load_view("modal_export", array("padID"=>$padID, "shortlnk" => $shortlnk, "shortnam" => $pad['shortlink'], "password" => $pad['password']));
   echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group . '"); </script>';
   

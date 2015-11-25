@@ -27,4 +27,6 @@ define("ALLOW_SEARCH", true);
 
 define("SHORTLNK_PREFIX", "http://pad.example.org/pp/");
 
+$db = new PDO("mysql:host=localhost;dbname=XXX_DBNAME_XXX;charset=utf8", "XXX_USERNAME___", "XXX_PASSWORD_XXX");
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

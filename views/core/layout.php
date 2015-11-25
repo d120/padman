@@ -27,10 +27,8 @@
 
   <img src="<?= HEADER_LOGO_URL ?>" class="top_logo">
   <h1 style="font-weight:normal; padding: 15px 0 30px;"><?= HEADER_H1 ?></h1>
-
+<div style="height:65px">
 <nav class="navbar navbar-default" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#grouplist-navbar">
         <span class="sr-only">Toggle navigation</span>
@@ -45,27 +43,27 @@
 
 
 <?php
-
-//foreach ($groupmap as $name => $id) {
-$i = 0;
-foreach($group_titles as $name){
-	if ($i++ == 8) {
-		echo "<li class='dropdown'><a href='#' class='dropdown-toggle' data-toggle='dropdown' style='font-size:140%;font-weight:bold;padding-top:9px;'>&hellip;</a><ul class='dropdown-menu'>";
-	}
+function listItem($name) { global $current_group;
 	$url = SELF_URL.strtolower($name);
 	if ($current_group === strtolower($name)) {
 		echo "<li data-id=\"".strtolower($name)."\" class=\"active\"><a href=\"$url\">".$name."</a></li>";
-	}
-	else {
+	} else {
 		echo "<li data-id=\"".strtolower($name)."\"><a href=\"$url\">".$name."</a></li>";
 	}
-
 }
-if ($i > 8) {
-	echo "</ul></li>";
+foreach($group_titles as $a){
+	if (is_array($a)) {
+		echo "<li class=dropdown><a href='#' class=dropdown-toggle data-toggle=dropdown>$a[0] <span class=caret></span></a><ul class=dropdown-menu>";
+		for($i = 1; $i < count($a); $i++) {
+			listItem($a[$i]);
+		}
+		echo "</ul></li>";
+	} else {
+		listItem($a);
+	}
 }
 ?>
-        <li><a href="<?= ADD_GROUP_LINK ?>"><i class="glyphicon glyphicon-plus"></i></a></li>
+    <li><a href="<?= ADD_GROUP_LINK ?>"><i class="glyphicon glyphicon-plus"></i></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
       	<?php load_view("login_info", $login); ?>
@@ -78,14 +76,14 @@ if ($i > 8) {
       </form>
       <?php endif; ?>
     </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
 </nav>
-
+</div>
 <?= isset($infoBox) ? $infoBox : '' ?>
 
 <?php if(isset($content)) { echo $content; } else { ?>
 <div class="panel panel-default">
-  <div class="panel-heading">Vorhandene Pads für Gruppe: <b><code id="cur_group_name"><?=$current_group?></code></b>
+  <div class="panel-heading">
+	<span id="taglist">...</span>
 		 <form class="panel-header-form form-inline group_form" action="javascript:invalid" method="POST">
 
 <?php if ($allow_pad_create): ?>
@@ -176,6 +174,11 @@ if ($i > 8) {
 <div class="footer container">
 Etherpad-Lite Manager by Max Weller et al  &middot;  <a href="https://github.com/d120/padman">This program is free software</a>
 &middot; <a href="https://github.com/d120/padman/issues">Issues</a>
+<br><br> &middot;
+<br><br> &middot;
+<br><br> &middot;
+<br><br> &middot;
+
 </div>
 
   </body>

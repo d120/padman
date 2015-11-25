@@ -26,6 +26,12 @@
             <button class="btn btn-default btn-lgxx" id="passw_clear" title="Passwortschutz ausschalten">aus</button>
         </div>
         
+        <div class="form-group  ">
+          <p>Schlagworte</p>
+        
+          <input type="text" id="pad_tags" class="form-control" style="">
+        </div>
+        
         
         <div class="form-group form-inline " id="delete_dlg" style="display: none">
           <p>Pad löschen</p>
