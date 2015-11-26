@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors', 'On');
-error_reporting(E_ALL );
+error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=utf-8');
 
 include "../init.php";
@@ -86,7 +86,7 @@ foreach($groupmaplist as $d)
         $groupmap[$d['group_mapper']] = $d['group_id'];
 
 // if sessionID is older than one hour,  ...
-if (isset($_COOKIE['sessionIDExpiration']) && $_COOKIE['sessionIDExpiration'] < time() - 3600) {
+if (!isset($_COOKIE['sessionIDExpiration']) || $_COOKIE['sessionIDExpiration'] < time() - 3600) {
     try {
         $author = $instance->createAuthorIfNotExistsFor($author_cn, $author_name);
         $authorID = $author->authorID;
@@ -155,8 +155,8 @@ if (isset($_GET['list_pads'])) {
   if (count($pads) == 0) echo "<div style='padding:100px 0;text-align:center;color:#aaa;'>- In dieser Kategorie gibt es noch keine Pads -</div>";
   $result["html"] = ob_get_clean();
   
-  $groupinfo = sql("SELECT tags FROM padman_group_cache WHERE group_mapper = ?", array($group));
-  $result["tags"] = explode(" ",$groupinfo[0]["tags"]);
+  $groupinfo = sql("SELECT tags FROM padman_group_cache WHERE group_mapper = ?", array($group))[0];
+  $result["tags"] = $groupinfo["tags"]=="" ? [] : explode(" ",$groupinfo["tags"]);
   
   header("Content-Type: application/json; charset=utf8");
   die(json_encode($result));

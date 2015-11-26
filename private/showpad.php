@@ -3,6 +3,11 @@ if(!$instance) exit;
 
   $padname = htmlspecialchars($_GET['show']);
   $pad = sql("SELECT * FROM padman_pad_cache WHERE group_mapper=? AND pad_name=?", array($group, $padname))[0];
+  if (!$pad) {
+    header("HTTP/1.1 404 Not Found");
+    load_view("pad_not_found", array("pad" => "$group/$padname"));
+    return;
+  }
   //header("Location: ".$padurl.$padname); #+$padurl+$padname);
   $padID = $pad['group_id'].'$'.$pad['pad_name'];
   
@@ -16,10 +21,17 @@ if(!$instance) exit;
   if ($pad['shortlink']) $shortlnk = "Kurz-Link: <br><b><a href='".SHORTLNK_PREFIX.$pad['shortlink']."' class='elipsis'>".SHORTLNK_PREFIX.$pad['shortlink']."</a></b>";
   
   //cache content
-  $result = $instance->getText($padID);
-  $fn = DATA_DIR."/index/".urlencode($group)."/".urlencode($padname).".txt";
-  @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
-  file_put_contents($fn, $result->text);
+  //note: this does also serve as a check whether this pad does really exist in etherpad lite
+  try {
+    $result = $instance->getText($padID);
+    $fn = DATA_DIR."/index/".urlencode($group)."/".urlencode($padname).".txt";
+    @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
+    file_put_contents($fn, $result->text);
+  } catch(InvalidArgumentException $ex) {
+    header("HTTP/1.1 500 Internal Server Error");
+    load_view("pad_not_found", array("pad" => "$group/$padname"));
+    return;
+  }
   
   if ($pad['access_level'] == 1) {
     $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
