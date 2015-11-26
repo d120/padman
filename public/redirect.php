@@ -1,33 +1,28 @@
 <?php
-//ini_set("display_errors","on");
-include "../config.inc.php";
-include "../jsondb.inc.php";
-
-$sldb = new JsonDB('shortlnk');
+ini_set("display_errors","on");
+include "../init.php";
 
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
-	$url = $_SERVER["REDIRECT_SCRIPT_URL"];
+  $url = $_SERVER["REDIRECT_SCRIPT_URL"];
 }
 if (isset($_GET["lnk"])) $url = $_GET["lnk"];
 
 if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
-    foreach($sldb->p as $k=>$v) {
-      if ($v == $res[1]) {
-        //header("Location: ".PAD_URL. $k);
-	header("HTTP/1.1 200 So fluffy");
-        $shortName = substr($k,strpos($k,'$')+1);
-        echo '<!doctype html><html><head><meta charset="utf8">';
-        echo "<title>$shortName - etherpad</title>\n";
-      	echo "<style>   html,body {margin:0;padding:0;height:100%;overflow:hidden;}
-           iframe { width: 100%; height: 100%; border: 0; }   </style>
-           </head><body>\n";
-        echo '<div style="padding: 5px; position: absolute; bottom: 0; left: 10px; background: #bbb;"><a href="/pad/?group='.htmlentities(urlencode(PAD_URL)).'">Login</a></div>';
-      	echo '<iframe src="'.PAD_URL. $k.'"></iframe></body></html>';
-        exit;
-      }
-    }
-    
+  $pads = sql("SELECT * FROM padman_pad_cache WHERE shortlink = ?", array($res[1]));
+  if (count($pads) == 1) {
+    $pad = $pads[0];
+    //header("Location: ".PAD_URL. $k);
+    header("HTTP/1.1 200 So fluffy");
+    echo '<!doctype html><html><head><meta charset="utf8">';
+    echo "<title>$pad[pad_name] - etherpad</title>\n";
+    echo "<style>   html,body {margin:0;padding:0;height:100%;overflow:hidden;}
+       iframe { width: 100%; height: 100%; border: 0; }   </style>
+       </head><body>\n";
+    echo '<div style="padding: 5px; position: absolute; bottom: 0; left: 10px; background: #bbb;"><a href="/pad/?group='.htmlentities(urlencode($pad['group_mapper'])).'&show='.htmlentities(urlencode($pad['pad_name'])).'">Login</a></div>';
+    echo '<iframe src="'.htmlentities(PAD_URL. $pad['group_id'].'$'.$pad['pad_name']).'"></iframe></body></html>';
+    exit;
   }
+}
 
 
 ?>
