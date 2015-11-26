@@ -1,8 +1,7 @@
 <?php
+$verbose = false;
 
-include "config.inc.php";
-include "jsondb.inc.php";
-include "private/etherpad-lite-client.php";
+include "init.php";
 try{
   $passwords = json_decode(file_get_contents('data/passwords.json'), true);
   $shortlinks = json_decode(file_get_contents('data/shortlnk.json'), true);
@@ -30,11 +29,11 @@ foreach ($shown_groups as $group_name) {
   $groupmap[$group_name] = $mapGroup->groupID;
 }
 foreach($groupmap as $group => $groupID) {
-  echo "Retrieving pads in group \"$group\" ... ";
+  if($verbose)echo "Retrieving pads in group \"$group\" ... ";
   $pads = $instance->listPads($groupID);
-  echo "OK \n";
+  if($verbose)echo "OK \n";
   
-  echo "Indexing pads in group \"$group\" ";
+  if($verbose)echo "Indexing pads in group \"$group\" ";
   
   $delQuery="DELETE FROM padman_pad_cache WHERE group_id = ".$db->quote($groupID);
   $tags = array();
@@ -43,10 +42,10 @@ foreach($groupmap as $group => $groupID) {
     $delQuery.=" AND pad_name<>".$db->quote($padname);
     //cache content
     $result = $instance->getText($padID);
-    $fn = JsonDB::$DATA_DIR."index/".urlencode($group)."/".urlencode($padname).".txt";
-    @mkdir(JsonDB::$DATA_DIR."index"); @mkdir(dirname($fn));
+    $fn = DATA_DIR."/index/".urlencode($group)."/".urlencode($padname).".txt";
+    @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
     file_put_contents($fn, $result->text);
-    echo ".";
+    if($verbose)echo ".";
     $insertQ->execute(array($group, $groupID, $padname,
                             isset($passwords[$padID])?$passwords[$padID]:null,
                             isset($shortlinks[$padID])?$shortlinks[$padID]:null));
@@ -57,14 +56,17 @@ foreach($groupmap as $group => $groupID) {
                             $group, $padname));
     
     $getTagsQ->execute(array($group, $padname));
-    $thistags = explode(" ",$getTagsQ->fetchColumn());
-    $tags = array_merge($tags, $thistags);
+    $tagstr = trim($getTagsQ->fetchColumn());
+    if ($tagstr) {
+      $thistags = explode(" ",$tagstr);
+      $tags = array_merge($tags, $thistags);
+    }
   }
   $db->exec($delQuery);
   
   $insertGroupQ->execute(array($group, $groupID, implode(" ",array_unique($tags))));
   
-  echo " OK \n";
+  if($verbose)echo " OK \n";
 }
 
 
