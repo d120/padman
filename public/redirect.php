@@ -40,33 +40,16 @@ if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
   }
 }
 
-
+ob_start();
 ?>
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<meta name='viewport' content='width=device-width, initial-scale=1'>
-<style>body { max-width: 600px; margin: 10px auto; }</style>
-
-</head>
-<body>
-<?php if ($pads): ?>
-
-<h3><?= htmlentities($url) ?></h3>
-<ul>
-<?php foreach($pads as $pad) { ?>
-<li><a href="<?= htmlentities(PAD_URL. $pad['group_id'].'$'.$pad['pad_name']) ?>"><?= $pad['pad_name'] ?></a></li>
-<?php } ?>
-</ul>
-
-<?php else: ?>
-<h3>Pad nicht gefunden</h3>
+<div class="msg alert alert-danger">
+<h4>Pad nicht gefunden</h4>
 
 <p>Pr&uuml;fe bitte nochmals den Link, vielleicht hast du dich ja vertippt... </p>
 <p>Ansonsten kann es auch sein, dass das Pad nicht mehr &ouml;ffentlich zug&auml;nglich ist, oder dass es gel&ouml;scht wurde.</p>
-<?php endif; ?>
+</div>
 
-</body>
-</html>
+<?php
+load_view("error_layout", array("content" => ob_get_clean()));
+?>
 

@@ -35,7 +35,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     $_GET["show"] = $res[2];
   } else {
     header("HTTP/1.1 404 Not Found");
-    echo "<h3>File ".htmlspecialchars($url)." not found</h3>";
+    load_view("group_not_found", array("group" => $group));
     exit;
   }
 }
