@@ -18,7 +18,7 @@ if ($_SERVER["HTTP_HOST"] != HOST_NAME) {
 }
 
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
-  $url = $_SERVER["REDIRECT_SCRIPT_URL"];
+  $url = $_SERVER["REDIRECT_SCRIPT_URL"] ?: $_SERVER["REDIRECT_URL"];
   if (preg_match('#^/pad/(.*)$#', $url, $res) && array_search($res[1], $group_keys) !== FALSE) {
     header("HTTP/1.1 200 OK");
     $_GET["group"] = $res[1];
@@ -35,7 +35,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
     $_GET["show"] = $res[2];
   } else {
     header("HTTP/1.1 404 Not Found");
-    echo "<h3>File not found</h3>";
+    echo "<h3>File ".htmlspecialchars($url)." not found</h3>"; var_dump($_SERVER);
     exit;
   }
 }
@@ -79,7 +79,7 @@ if (!in_array($group, $author_groups)) {
     return;
 }
 
-$groupmaplist = $db->query("select group_id,group_mapper from padman_group_cache");
+$groupmaplist = $db->query("select group_id,group_mapper,tags from padman_group_cache")->fetchAll();
 $groupmap = array();
 foreach($groupmaplist as $d)
     if (array_search($d['group_mapper'], $author_groups) !== false)
@@ -127,7 +127,7 @@ if (isset($_GET['pad_id']) && isset($_GET['export'])) {
 }
 
 // JSON API
-if (count($_POST)) {
+if (count($_POST) || isset($_GET["api"])) {
   require "showapi.php";
   exit;
 
@@ -138,6 +138,7 @@ if (isset($_GET['list_pads'])) {
   if ($_GET['tag']) $tagWhere = ' tags LIKE ' . $db->quote("%$_GET[tag]%");
     else $tagWhere = ' NOT (tags LIKE "%archiv%") ';
   $pads = sql('SELECT * FROM padman_pad_cache WHERE group_mapper = ? AND '.$tagWhere.' ORDER BY last_edited DESC', array($group));
+  
   echo '<div class="table-responsive"><table class="table table-hover">';
   echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=100></th></tr></thead><tbody>';
   foreach ($pads as $PAD) {
@@ -167,8 +168,10 @@ if (isset($_COOKIE["infobox"])) {
   setcookie("infobox", null);
 }
 
+
+
 load_view("layout", array(
-  "group_titles" => $group_titles, "groupmap" => $groupmap, "current_group" => $group, "allow_pad_create" => $allow_pad_create,
+  "group_titles" => $group_titles, "groups" => $groupmaplist, "current_group" => $group, "allow_pad_create" => $allow_pad_create,
   "login" => array("cn" => $author_cn, "name" => $author_name)
 ));
 

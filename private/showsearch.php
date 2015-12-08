@@ -1,7 +1,7 @@
 <?php
 if (!ALLOW_SEARCH) { header("403 Forbidden"); return; }
 
-$cmd = "cd ".escapeshellarg(JsonDB::$DATA_DIR.'index')."; grep -inR ".escapeshellarg($_GET["q"])." .";
+$cmd = "cd ".escapeshellarg(DATA_DIR.'/index')."; grep -inR ".escapeshellarg($_GET["q"])." .";
 $out = shell_exec($cmd);
 $out = htmlspecialchars($out);
 $out = preg_replace("/^\\.\\/([^\\/]+)\\/([^:]+)\\.txt:([0-9]+):/m", "<a href='?group=$1&show=$2'>./$1/$2.txt</a>:<font color=grey>$3</font>: ", $out);

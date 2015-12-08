@@ -7,7 +7,8 @@
     <title>pad manager</title>
 
     <script>
-    var padman_data = { "activegroup" : "<?= $current_group ?>", "groups" : <?= json_encode($groupmap) ?> };
+    var padman_data = { "activegroup" : "<?= $current_group ?>", "groups" : <?= json_encode($groups) ?> };
+    var SHORTLNK_PREFIX=<?=json_encode(SHORTLNK_PREFIX)?>, SELF_URL=<?=json_encode(SELF_URL)?>;
     </script>
     
     <!-- Bootstrap -->
@@ -21,8 +22,8 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-<div class="alert alert-warning" role="alert">Der PadMan hat eine neue interne Struktur und ein paar neue Funktionen, aber vielleicht auch ein paar neue Bugs. Bitte schau daher bei jeder Aktion nach, ob es geklappt hat. Probleme bitte bei mweller@d120.de oder <a href="https://github.com/d120/padman/issues">als Issue</a> melden. Vielen Dank. <small class="pull-right">Diese Meldung verschwindet die Tage automatisch&trade;.</small></div>
-
+<!--<div class="alert alert-warning" role="alert">Der PadMan hat eine neue interne Struktur und ein paar neue Funktionen, aber vielleicht auch ein paar neue Bugs. Bitte schau daher bei jeder Aktion nach, ob es geklappt hat. Probleme bitte bei mweller@d120.de oder <a href="https://github.com/d120/padman/issues">als Issue</a> melden. Vielen Dank. <small class="pull-right">Diese Meldung verschwindet die Tage automatisch&trade;.</small></div>
+-->
 <div class="container">
 <div class="top_colorbar" style="background-color: <?= HEADER_ACCENT_COLOR ?>;"></div>
 
@@ -167,9 +168,8 @@ foreach($group_titles as $a){
 
 
     <script>
-    var self_url = <?= json_encode(SELF_URL) ?>, group = <?= json_encode($current_group) ?>;
-    var padMan = new PadManager(self_url, group);
-    padMan.loadPadList();
+    var padMan = new PadManager();
+    padMan.loadGroup(<?= json_encode($current_group) ?>);
     </script>
 
 <div class="footer container">

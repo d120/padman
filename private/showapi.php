@@ -1,6 +1,23 @@
 <?php
+header("Content-Type: application/json; charset=utf-8");
 
 // JSON api
+if (isset($_GET['api']) && $_GET['api'] == 'pad_info' && isset($_GET['pad_id'])) {
+  $padid=explode('$',$_GET['pad_id']);
+  $pad = sql("SELECT * FROM padman_pad_cache WHERE group_id=? AND pad_name=?", array($padid[0], $padid[1]));
+  die(json_encode($pad));
+}
+
+if (isset($_GET['api']) && $_GET['api'] == 'list') {
+  if ($_GET['tag']) $tagWhere = ' tags LIKE ' . $db->quote("%$_GET[tag]%");
+    else $tagWhere = ' NOT (tags LIKE "%archiv%") ';
+  $pads = sql('SELECT * FROM padman_pad_cache WHERE group_mapper = ? AND '.$tagWhere.' ORDER BY last_edited DESC', array($_GET["group"]));
+  foreach($pads as &$pad) {
+    $pad['last_edited_formatted'] = $pad['last_edited']=='0000-00-00 00:00:00' ? '' : date("d.m.y H:i",strtotime($pad['last_edited']));
+  }
+  die(json_encode([ "pads" => $pads ]));
+}
+
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
   $public = $_POST['set_public'] == 'true';
@@ -10,7 +27,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
     if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
     if (!$sl) $sl = substr(md5($padname),0,7);
   }
-  update_pad($padname, array('shortlink' => $sl));
+  update_pad($padname, array('shortlink' => $sl, 'access_level' => $public ? 1 : 0));
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
