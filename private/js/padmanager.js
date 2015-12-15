@@ -264,7 +264,22 @@ function PadManager() {
     $(".group_form").attr("action", SELF_URL + "?group=" + escape(groupInfo.group_mapper));
     $(".create_pad_name").attr("placeholder", "neues Pad in " + groupInfo.group_mapper);
   }
-  
+
+  $("#searchBox").keyup(function(e) {
+    var q = $("#searchBox").val();{}
+    var $qs = $("#quickSearch");
+    if (!q) { $qs.hide(); return; }
+    API_Get("search", "q="+escape(q), function(r) {
+      $qs.html("");
+      r.result.forEach(function(d) {
+        $qs.append("<a href='?group="+d.group_mapper+"&show="+d.pad_name+"'>" + d.group_mapper+"/" + d.pad_name + "</li>");
+      });
+      var pos = $("#searchBox").offset();
+      $qs.css({ "top": pos.top+30+"px", "left": pos.left-15+"px" });
+      $qs.show();
+    });
+  });
+
   $("#taglist").click(function(e) {
     $("#taglist span").attr("class", "btn btn-xs btn-default");
     var $tag = $(e.target).attr("class", "btn btn-xs btn-primary");

@@ -18,6 +18,12 @@ if (isset($_GET['api']) && $_GET['api'] == 'list') {
   die(json_encode([ "pads" => $pads ]));
 }
 
+if (isset($_GET['api']) && $_GET['api'] == 'search' && isset($_GET['q'])) {
+  $q = "%$_GET[q]%";
+  $pads = sql('SELECT group_mapper,pad_name FROM padman_pad_cache WHERE group_mapper LIKE ? OR pad_name LIKE ? ', [ $q, $q ]);
+  die(json_encode([ "result" => $pads ]));
+}
+
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
   $public = $_POST['set_public'] == 'true';

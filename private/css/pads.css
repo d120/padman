@@ -25,7 +25,7 @@ td.icon { cursor: move; }
 .footer { color: #ccc; font-size: 10pt; padding-bottom: 20px; }
 
 /* --> Pad View (IFrame) */
-iframe#padview_iframe { width: 100%; height: 100%; border: 0; } 
+iframe#padview_iframe { width: 100%; height: 100%; border: 0; }
 #padview_info b { font-size: 12pt; }
 #padview_info {
     position: absolute; bottom: 0; left: 0; right: 0;
@@ -45,12 +45,17 @@ background: -moz-linear-gradient(top, #e2e2e2 0%, #dbdbdb 50%, #d1d1d1 51%, #fef
 .elipsis { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: block; }
 .title { padding-top: 4px; font-weight: bold; }
 
+#quickSearch a { display: block; padding: 4px 7px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 @media screen and (min-width: 768px) {
     #grouplist-navbar { padding-left: 0; }
-  nav.navbar { padding-left: 5px; padding-right: 20px; }
+    nav.navbar { padding-left: 5px; padding-right: 20px; }
+    #quickSearch { position: absolute; width: 270px; background: #eee; border: 2px solid #777; z-index: 5; }
 }
 @media screen and (max-width: 991px) {
   .navbar .nav>li>a { padding-left: 4px; padding-right: 4px; }
 }
 
 #pad_passw:invalid { outline:2px solid red;color:red; }
+
+
+

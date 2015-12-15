@@ -73,13 +73,16 @@ foreach($group_titles as $a){
       <?php if (ALLOW_SEARCH): ?>
       <form class="navbar-form navbar-right" role="search" action="<?= SELF_URL?>" method="get">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" style="width: 150px;">
+          <input type="text" class="form-control" placeholder="Search" name="q" style="width: 150px;" id="searchBox" autocomplete="off">
         </div>
       </form>
       <?php endif; ?>
     </div><!-- /.navbar-collapse -->
 </nav>
 </div>
+
+<div id="quickSearch"></div>
+
 <?= isset($infoBox) ? $infoBox : '' ?>
 
 <?php if(isset($content)) { echo $content; } else { ?>

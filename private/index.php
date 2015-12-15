@@ -105,6 +105,12 @@ if (!isset($_COOKIE['sessionIDExpiration']) || $_COOKIE['sessionIDExpiration'] <
     setcookie('sessionID', implode(",",$sessions), $validUntil, '/', HOST_NAME);
 }
 
+// JSON API
+if (count($_POST) || isset($_GET["api"])) {
+  require "showapi.php";
+  exit;
+}
+
 if (isset($_GET['q'])) {
   require "showsearch.php";
   exit;
@@ -126,12 +132,6 @@ if (isset($_GET['pad_id']) && isset($_GET['export'])) {
   exit;
 }
 
-// JSON API
-if (count($_POST) || isset($_GET["api"])) {
-  require "showapi.php";
-  exit;
-
-}
 
 if (isset($_GET['list_pads'])) {
   ob_start();
