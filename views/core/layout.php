@@ -81,11 +81,10 @@ foreach($group_titles as $a){
 </nav>
 </div>
 
-<div id="quickSearch"></div>
+<div id="quickSearch" style="display:none"></div>
 
 <?= isset($infoBox) ? $infoBox : '' ?>
 
-<?php if(isset($content)) { echo $content; } else { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
 	<span id="taglist">...</span>
@@ -111,7 +110,6 @@ foreach($group_titles as $a){
      Eile mit Weile ...
    </ul>
 </div>
-<?php } ?>
 
 </div>
 

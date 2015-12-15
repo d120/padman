@@ -159,7 +159,8 @@ function PadManager() {
 
   //--> Rename pad
   if (padman_data)
-      for(var k in padman_data.groups) $("#rename_group").append("<option value='"+padman_data.groups[k].group_id+"'>"+padman_data.groups[k].group_mapper+"</option>");
+      for(var k in padman_data.groups)
+        $("#rename_group").append("<option value='"+padman_data.groups[k].group_id+"'>"+padman_data.groups[k].group_mapper+"</option>");
 
   $(document).on('click', '.pad_rename', function(e) {
     var $dlg = $("#modal_rename");
@@ -272,7 +273,7 @@ function PadManager() {
     API_Get("search", "q="+escape(q), function(r) {
       $qs.html("");
       r.result.forEach(function(d) {
-        $qs.append("<a href='?group="+d.group_mapper+"&show="+d.pad_name+"'>" + d.group_mapper+"/" + d.pad_name + "</li>");
+        $qs.append("<a href='"+SELF_URL+"?group="+d.group_mapper+"&show="+d.pad_name+"'>" + d.group_mapper+"/" + d.pad_name + "</li>");
       });
       var pos = $("#searchBox").offset();
       $qs.css({ "top": pos.top+30+"px", "left": pos.left-15+"px" });
@@ -287,6 +288,6 @@ function PadManager() {
     if (selected_tag == "(alle)") selected_tag = "";
     loadPadList();
   });
-  
+
   this.loadPadList = loadPadList;
 }
