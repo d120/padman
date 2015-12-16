@@ -24,6 +24,15 @@ if (isset($_GET['api']) && $_GET['api'] == 'search' && isset($_GET['q'])) {
   die(json_encode([ "result" => $pads ]));
 }
 
+if (isset($_POST['set_config'])) {
+  sql("INSERT OR IGNORE INTO padman_user SET user = ?", [ $author_cn ]);
+  sql("UPDATE padman_user SET alias = ? WHERE user = ?", [ $_POST["alias"], $author_cn ]); 
+  die(json_encode([ "success" => true ]));
+}
+
+
+
+
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
   $public = $_POST['set_public'] == 'true';

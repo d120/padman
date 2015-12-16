@@ -58,14 +58,10 @@ $allow_pad_create = false;
 if (isset($_SERVER['PHP_AUTH_USER']) || ALLOW_ANON_PAD_CREATE) $allow_pad_create = true;
 
 $author_cn = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : 'ip_'.preg_replace('/[^0-9a-f]+/', '_', $_SERVER["REMOTE_ADDR"]));
-if (file_exists("/home/" . $author_cn . "/.padname")) {
-  $author_name = file_get_contents("/home/" . $author_cn . "/.padname");
-} else {
-  $author_name = $author_cn;
-}
-//$author_cn = $_SERVER['HTTP_AUTH_CN'];
-//$groups = "sitzung; fachschaft; inforz; ophase"; //base64_decode($_SERVER['HTTP_AUTH_GROUPS']);
-//$author_groups = preg_split("/[\s;]+/", $groups);
+$userinfo = sql("SELECT * FROM padman_user WHERE user = ?", [ $author_cn ]);
+if ($userinfo && $userinfo["alias"]) $author_name = $userinfo["alias"];
+else $author_name = $author_cn;
+
 $author_groups = $group_keys;
 
 $author_groups = array_intersect($author_groups, $group_keys);
@@ -116,18 +112,23 @@ if (isset($_GET['q'])) {
   exit;
 }
 
+if (isset($_GET['do']) && $_GET['do'] == 'user_config') {
+  require "showuser.php";
+  exit;
+}
+
 if (isset($_GET['show'])) {
   require "showpad.php";
   exit;
 }
 
-if (isset($_GET['export']) && $_GET['export'] == 'mdhtml') {
+if (isset($_GET['do']) && $_GET['do'] == 'export_mdhtml') {
   require "showmarkdown.php";
   exit;
 }
 
 // Export as wikitext for MediaWiki
-if (isset($_GET['pad_id']) && isset($_GET['export'])) {
+if (isset($_GET['pad_id']) && isset($_GET['do']) && $_GET['do'] == 'export_wiki') {
   require "showmediawiki.php";
   exit;
 }
