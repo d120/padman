@@ -45,7 +45,7 @@ RewriteRule ^index\.php$ - [L]
 
 ## License
 
-Copyright (c) 2014-2015 Max Weller, Johannes Lauinger, Jannik Vieten
+Copyright (c) 2014-2016 Max Weller, Johannes Lauinger, Jannik Vieten
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
