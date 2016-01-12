@@ -23,14 +23,28 @@ location / {
 And for Apache:
 
 ```
+Alias /padman /var/www/intern/padman/private
+Alias /pp /var/www/intern/padman/public
+
+<Directory /var/www/intern/padman/private>
 AuthType Basic
 AuthName "Padman"
 AuthUserFile /path/to/the/pad/.htpasswd
 require valid-user
-                
+
 RewriteEngine On
-RewriteBase /
-RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /padman/index.php?group=$1 [L]
+
+</Directory>
+<Directory /var/www/intern/padman/public>
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /pp/redirect.php?lnk=$1 [L]
+
+</Directory>
 ```
 
 ## Links

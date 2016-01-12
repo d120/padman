@@ -19,7 +19,7 @@ if ($_SERVER["HTTP_HOST"] != HOST_NAME) {
 
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
   $url = $_SERVER["REDIRECT_SCRIPT_URL"] ?: $_SERVER["REDIRECT_URL"];
-  if (preg_match('#^/pad/(.*)$#', $url, $res) && array_search($res[1], $group_keys) !== FALSE) {
+  if (preg_match('#^'.SELF_URL.'(.*)$#', $url, $res) && array_search($res[1], $group_keys) !== FALSE) {
     header("HTTP/1.1 200 OK");
     $_GET["group"] = $res[1];
   } elseif (preg_match('#^/pad/p/(Sitzung.*)$#', $url, $res)) {

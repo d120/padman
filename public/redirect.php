@@ -7,7 +7,7 @@ if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") 
 }
 if (isset($_GET["lnk"])) $url = $_GET["lnk"];
 
-if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
+if (preg_match('#/?([a-z0-9-]+)$#', $url, $res)) {
   $pads = sql("SELECT * FROM padman_pad_cache WHERE shortlink = ? ORDER BY pad_name", array($res[1]));
   if (count($pads) >= 1) {
     $pad = $pads[0];
