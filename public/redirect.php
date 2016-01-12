@@ -14,7 +14,7 @@ if (preg_match('#/([a-z0-9-]+)$#', $url, $res)) {
     //header("Location: ".PAD_URL. $k);
     header("HTTP/1.1 200 So fluffy");
     echo '<!doctype html><html><head><meta charset="utf8">';
-    echo "<title>$pad[pad_name] - etherpad</title>\n";
+    echo "<title>$pad[pad_name] - " . HEADER_TITLE ."</title>\n";
     echo "<style>   html,body {margin:0;padding:0;height:100%;overflow:hidden;}
        iframe { width: 100%; height: 100%; border: 0; }
        #toolbar{padding: 5px; position: absolute; bottom: 0; left: 10px; background: #bbb;}

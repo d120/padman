@@ -41,7 +41,7 @@ if(!$instance) exit;
     $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false"; $tags="";
   }
 
-  echo "<meta charset='utf8'><title>$padname - $group - d120.de/pad</title>
+echo "<meta charset='utf8'><title>$padname - $group - " . HEADER_TITLE . "</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <style>
     @import url(css/bootstrap.min.css); 

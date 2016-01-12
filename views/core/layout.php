@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>pad manager</title>
+    <title><?= HEADER_TITLE ?></title>
 
     <script>
     var padman_data = { "activegroup" : "<?= $current_group ?>", "groups" : <?= json_encode($groups) ?> };
