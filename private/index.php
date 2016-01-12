@@ -59,8 +59,13 @@ if (isset($_SERVER['PHP_AUTH_USER']) || ALLOW_ANON_PAD_CREATE) $allow_pad_create
 
 $author_cn = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : 'ip_'.preg_replace('/[^0-9a-f]+/', '_', $_SERVER["REMOTE_ADDR"]));
 $userinfo = sql("SELECT * FROM padman_user WHERE user = ?", [ $author_cn ]);
-if ($userinfo && $userinfo["alias"]) $author_name = $userinfo["alias"];
-else $author_name = $author_cn;
+if (count($userinfo) == 1) {
+  $userinfo = $userinfo[0];
+  $author_name = $userinfo["alias"];
+} else {
+  $userinfo = null;
+  $author_name = $author_cn;
+}
 
 $author_groups = $group_keys;
 
@@ -80,26 +85,6 @@ $groupmap = array();
 foreach($groupmaplist as $d)
     if (array_search($d['group_mapper'], $author_groups) !== false)
         $groupmap[$d['group_mapper']] = $d['group_id'];
-
-// if sessionID is older than one hour,  ...
-if (!isset($_COOKIE['sessionIDExpiration']) || $_COOKIE['sessionIDExpiration'] < time() - 3600) {
-    try {
-        $author = $instance->createAuthorIfNotExistsFor($author_cn, $author_name);
-        $authorID = $author->authorID;
-    } catch(Exception $ex) {echo $ex;
-        die("<h2>Eile mit Weile - Etherpad ist zur Zeit nicht erreichbar</h2>");
-    }
-
-    $validUntil = mktime(23, 0, 0, date("m"), date("d")+1, date("y")); // One day in the future
-
-    $sessions = array();
-    foreach ($author_groups as $group_name) {
-        $sessions[] = $instance->createSession($groupmap[$group_name], $authorID, $validUntil)->sessionID;
-    }
-
-    setcookie('sessionIDExpiration', time(), $validUntil, '/', HOST_NAME);
-    setcookie('sessionID', implode(",",$sessions), $validUntil, '/', HOST_NAME);
-}
 
 // JSON API
 if (count($_POST) || isset($_GET["api"])) {
@@ -133,43 +118,12 @@ if (isset($_GET['pad_id']) && isset($_GET['do']) && $_GET['do'] == 'export_wiki'
   exit;
 }
 
-
-if (isset($_GET['list_pads'])) {
-  ob_start();
-  if ($_GET['tag']) $tagWhere = ' tags LIKE ' . $db->quote("%$_GET[tag]%");
-    else $tagWhere = ' NOT (tags LIKE "%archiv%") ';
-  $pads = sql('SELECT * FROM padman_pad_cache WHERE group_mapper = ? AND '.$tagWhere.' ORDER BY last_edited DESC', array($group));
-  
-  echo '<div class="table-responsive"><table class="table table-hover">';
-  echo '<thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=100></th></tr></thead><tbody>';
-  foreach ($pads as $PAD) {
-    $PAD["icon_html"] = ""; $PAD["className"] = "";
-    if ($PAD["access_level"] == 1) {
-      $PAD["icon_html"] = '<span class="glyphicon glyphicon-globe"></span> '; $PAD["public"]="true"; $PAD["className"]="";
-    } else{
-      $PAD["icon_html"] = '<span class="glyphicon glyphicon-home"></span> '; $PAD["public"]="false";
-    }
-    if ($PAD["shortlink"]) $PAD["shortlink"] = SHORTLNK_PREFIX.$PAD["shortlink"];
-    
-    load_view("pad_list_item", $PAD);
-  }
-  echo "</tbody></table></div>";
-  if (count($pads) == 0) echo "<div style='padding:100px 0;text-align:center;color:#aaa;'>- In dieser Kategorie gibt es noch keine Pads -</div>";
-  $result["html"] = ob_get_clean();
-  
-  $groupinfo = sql("SELECT tags FROM padman_group_cache WHERE group_mapper = ?", array($group))[0];
-  $result["tags"] = $groupinfo["tags"]=="" ? [] : explode(" ",$groupinfo["tags"]);
-  
-  header("Content-Type: application/json; charset=utf8");
-  die(json_encode($result));
-}
-
 if (isset($_COOKIE["infobox"])) {
   $infoBox = $_COOKIE["infobox"];
   setcookie("infobox", null);
 }
 
-
+pad_session_check();
 
 load_view("layout", array(
   "group_titles" => $group_titles, "groups" => $groupmaplist, "current_group" => $group, "allow_pad_create" => $allow_pad_create,

@@ -27,12 +27,14 @@ if(!$instance) exit;
     $fn = DATA_DIR."/index/".urlencode($group)."/".urlencode($padname).".txt";
     @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
     file_put_contents($fn, $result->text);
-  } catch(InvalidArgumentException $ex) {
+  } catch(Exception $ex) {
     header("HTTP/1.1 500 Internal Server Error");
-    load_view("pad_not_found", array("pad" => "$group/$padname"));
+    load_view("error_layout", array("content" => "Das Pad $group/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br>Letzter Inhalt:"."<pre>".htmlspecialchars(file_get_contents(DATA_DIR."/index/$group/$padname.txt"))."</pre>"));
     return;
   }
-  
+
+  pad_session_check();
+
   if ($pad['access_level'] == 1) {
     $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
   } else{

@@ -20,17 +20,20 @@ if (isset($_GET['api']) && $_GET['api'] == 'list') {
 
 if (isset($_GET['api']) && $_GET['api'] == 'search' && isset($_GET['q'])) {
   $q = "%$_GET[q]%";
-  $pads = sql('SELECT group_mapper,pad_name FROM padman_pad_cache WHERE group_mapper LIKE ? OR pad_name LIKE ? ', [ $q, $q ]);
+  $pads = sql('SELECT group_mapper,pad_name FROM padman_pad_cache WHERE group_mapper LIKE ? OR pad_name LIKE ? ORDER BY last_edited DESC LIMIT 20', [ $q, $q ]);
   die(json_encode([ "result" => $pads ]));
 }
 
 if (isset($_POST['set_config'])) {
-  sql("INSERT OR IGNORE INTO padman_user SET user = ?", [ $author_cn ]);
-  sql("UPDATE padman_user SET alias = ? WHERE user = ?", [ $_POST["alias"], $author_cn ]); 
+  if (!$userinfo) sql("INSERT INTO padman_user SET user = ?", [ $author_cn ], true);
+  sql("UPDATE padman_user SET alias = ? WHERE user = ?", [ $_POST["alias"], $author_cn ], true); 
   die(json_encode([ "success" => true ]));
 }
 
-
+if (isset($_POST['create_sessions'])) {
+  create_sessions();
+  die(json_encode([ "success" => true ]));
+}
 
 
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {

@@ -25,6 +25,7 @@
 <!--<div class="alert alert-warning" role="alert">Der PadMan hat eine neue interne Struktur und ein paar neue Funktionen, aber vielleicht auch ein paar neue Bugs. Bitte schau daher bei jeder Aktion nach, ob es geklappt hat. Probleme bitte bei mweller@d120.de oder <a href="https://github.com/d120/padman/issues">als Issue</a> melden. Vielen Dank. <small class="pull-right">Diese Meldung verschwindet die Tage automatisch&trade;.</small></div>
 -->
 <div class="container">
+<?php load_view("extra_header", array()); ?>
 <div class="top_colorbar" style="background-color: <?= HEADER_ACCENT_COLOR ?>;"></div>
 
   <img src="<?= HEADER_LOGO_URL ?>" class="top_logo">
