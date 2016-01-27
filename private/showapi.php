@@ -68,12 +68,19 @@ if (isset($_POST['delete_this_pad']) && isset($_POST['pad_id'])) {
 
 if (isset($_POST['set_tags']) && isset($_POST['pad_id'])) {
   $padname = $_POST['pad_id'];
+  $padid = explode('$', $padname);
   update_pad($padname, array('tags' =>
                       preg_replace('/[^a-zA-Z0-9 ]/','',
                       preg_replace('/[ ,;]+/',' ',
                             $_POST['set_tags']
-                  ))));
-
+                          ))));
+  $tags = array();
+  $tagresult = sql("SELECT tags FROM padman_pad_cache WHERE group_id = ?", [ $padid[0] ]);
+  foreach($tagresult as $d) {
+    $tags = array_merge($tags, explode(" ", $d["tags"]));
+  }
+  $db->prepare("UPDATE padman_group_cache SET tags = ? WHERE group_id = ?")
+      ->execute([ implode(" ", array_unique($tags)), $padid[0] ]);
   die(json_encode(array("status"=>"ok")));
 }
 if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
