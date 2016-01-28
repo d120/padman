@@ -8,7 +8,6 @@ if(!$instance) exit;
 		     array("\n"  , "\n"   , "''"  , "''"   , " "     , "<ul", "/",      "<bteil>",       "</bteil>"        ),
 		     $txt);
   $txt = preg_replace('#<!DOCTYPE HTML><html><body>|</body></html>|<a href="[^"]+">|</a>|<strong>|</strong>|</a>#', '', $txt);
- echo "\n>>>>\n$txt\n<<<<<\n";
   $l = explode("\n", $txt); $ul = 0;
   $iscomment = false;
   foreach($l as $d) {
