@@ -3,25 +3,44 @@ header("Content-Type: application/json; charset=utf-8");
 
 // JSON api
 if (isset($_GET['api']) && $_GET['api'] == 'pad_info' && isset($_GET['pad_id'])) {
-  $padid=explode('$',$_GET['pad_id']);
-  $pad = sql("SELECT * FROM padman_pad_cache WHERE group_id=? AND pad_name=?", array($padid[0], $padid[1]));
+  $pad = sql("SELECT * FROM padman_pad_cache WHERE id=?", array($_GET["pad_id"]));
+  $pad['tags'] = trim($pad['tags']);
   die(json_encode($pad));
 }
 
-if (isset($_GET['api']) && $_GET['api'] == 'list') {
-  if ($_GET['tag']) $tagWhere = ' tags LIKE ' . $db->quote("%$_GET[tag]%");
-    else $tagWhere = ' NOT (tags LIKE "%archiv%") ';
-  $pads = sql('SELECT * FROM padman_pad_cache WHERE group_mapper = ? AND '.$tagWhere.' ORDER BY last_edited DESC', array($_GET["group"]));
+if (isset($_GET['api']) && $_GET['api'] == 'search' && isset($_GET['q'])) {
+  $query = explode(" ", $_GET['q']);
+  $where = ""; $para = array();
+  $limit = " LIMIT ".intval($_GET["offset"]).",21";
+  foreach($query as $q) {
+    if (substr($q,0,1)=="!") { $where .= " NOT "; $q=substr($q,1); }
+    if (substr($q,0,1)=="#") {
+      $q = "% ".substr($q,1);
+      $where .= " (tags LIKE ? OR tags LIKE ?) AND "; $para[] = "$q %"; $para[] = "$q/%";
+    } elseif (substr($q,0,4)=="tag:") {
+      $q = "%".substr($q,4)."%";
+      $where .= " tags LIKE ? AND "; $para[] = $q;
+    } elseif (substr($q,0,1)=="&") {
+      $q = "".substr($q,1)."";
+      $where .= " group_alias LIKE ? AND "; $para[] = $q; $limit="";
+    } else {
+      $q = "%$q%";
+      $where .= " (pad_name LIKE ? OR tags LIKE ? OR group_alias LIKE ?) AND "; $para[] = $q;$para[] = $q;$para[]=$q;
+    }
+  }
+
+  $fields="*";
+  $pads = sql('SELECT '.$fields.' FROM padman_pad_cache WHERE '.$where.' 1=1 ORDER BY last_edited DESC '.$limit, $para);
   foreach($pads as &$pad) {
     $pad['last_edited_formatted'] = $pad['last_edited']=='0000-00-00 00:00:00' ? '' : date("d.m.y H:i",strtotime($pad['last_edited']));
+    $pad['tags'] = trim($pad['tags']);
   }
-  die(json_encode([ "pads" => $pads ]));
-}
-
-if (isset($_GET['api']) && $_GET['api'] == 'search' && isset($_GET['q'])) {
-  $q = "%$_GET[q]%";
-  $pads = sql('SELECT group_mapper,pad_name FROM padman_pad_cache WHERE group_mapper LIKE ? OR pad_name LIKE ? ORDER BY last_edited DESC LIMIT 20', [ $q, $q ]);
-  die(json_encode([ "result" => $pads ]));
+  $nextPageOffset = false;
+  if (count($pads) == 21 && $limit) {
+    $nextPageOffset = intval($_GET["offset"])+20;
+    array_splice($pads, 20, 1);
+  }
+  die(json_encode(["query"=>$where,"q"=>$para, "result" => $pads, "next_page_offset" => $nextPageOffset ]));
 }
 
 if (isset($_POST['set_config'])) {
@@ -37,64 +56,61 @@ if (isset($_POST['create_sessions'])) {
 
 
 if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
-  $padname = $_POST['pad_id'];
+  $pad = get_pad_by_id($_POST['pad_id']);
   $public = $_POST['set_public'] == 'true';
-  $ok=$instance->setPublicStatus($padname, $public);
+  $ok=$instance->setPublicStatus(ep_pad_id($pad), $public);
   $sl = null;
   if ($public) {
     if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
     if (!$sl) $sl = substr(md5($padname),0,7);
   }
-  update_pad($padname, array('shortlink' => $sl, 'access_level' => $public ? 1 : 0));
+  update_pad($pad['id'], array('shortlink' => $sl, 'access_level' => $public ? 1 : 0));
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
 }
 if (isset($_POST['set_passw']) && isset($_POST['pad_id'])) {
-  $padname = $_POST['pad_id'];
-  $ok=setPassword($padname, preg_replace('/[^a-zA-Z0-9_.-]/','',$_POST['set_passw']));
+  $pad = get_pad_by_id($_POST['pad_id']);
+  $ok=set_pad_password($pad, preg_replace('/[^a-zA-Z0-9_.-]/','',$_POST['set_passw']));
   die(json_encode(array("status"=>"ok")));
 }
 if (isset($_POST['delete_this_pad']) && isset($_POST['pad_id'])) {
   if (defined('DELETE_PASSWORD') && strlen(DELETE_PASSWORD) > 0 && DELETE_PASSWORD != $_POST['delete_this_pad'])
       die(json_encode(array("status"=>"access_denied")));
-  $padname = $_POST['pad_id'];
-  $ok=$instance->deletePad($padname);
+  $pad = get_pad_by_id($_POST['pad_id']);
+  $ok=$instance->deletePad(ep_pad_id($pad));
   
   $padid=explode('$',$padname);
-  $db->prepare("DELETE FROM padman_pad_cache  WHERE group_id=? AND pad_name=?")
-     ->execute(array($padid[0], $padid[1]));
+  $db->prepare("DELETE FROM padman_pad_cache  WHERE id=?")
+     ->execute(array($pad["id"]));
   
   die(json_encode(array("status"=>"ok")));
 }
 
 if (isset($_POST['set_tags']) && isset($_POST['pad_id'])) {
-  $padname = $_POST['pad_id'];
-  $padid = explode('$', $padname);
-  update_pad($padname, array('tags' =>
-                      preg_replace('/[^a-zA-Z0-9 ]/','',
+  $pad = get_pad_by_id($_POST['pad_id']);
+  update_pad($pad["id"], ['tags' =>' '.
+                      trim(preg_replace('/[^a-zA-Z0-9\/ ]/','',
                       preg_replace('/[ ,;]+/',' ',
                             $_POST['set_tags']
-                          ))));
-  $tags = array();
-  $tagresult = sql("SELECT tags FROM padman_pad_cache WHERE group_id = ?", [ $padid[0] ]);
-  foreach($tagresult as $d) {
-    $tags = array_merge($tags, explode(" ", $d["tags"]));
-  }
-  $db->prepare("UPDATE padman_group_cache SET tags = ? WHERE group_id = ?")
-      ->execute([ implode(" ", array_unique($tags)), $padid[0] ]);
+                          ))).' ']);
+  refresh_group($pad["group_alias"]);
+
   die(json_encode(array("status"=>"ok")));
 }
-if (isset($_POST['rename']) && isset($_POST['pad_id'])) {
-  $padname = $_POST['pad_id'];
+if (isset($_POST['rename']) && isset($_POST['pad_id']) && isset($_POST['new_group'])) {
+  $pad = get_pad_by_id($_POST['pad_id']);
+  $newName = $_POST['rename'];
+  $new_group = sql("SELECT * FROM padman_group WHERE group_alias=?", array($_POST["new_group"]))[0];
   try {
-    $ok=$instance->movePad($padname, $_POST['rename']);
+    $oldId = ep_pad_id($pad); $newId = $new_group['group_id'].'$'.$new_group['group_alias'].'_'.$newName;
+    #var_dump($oldId, $newId);
+    $ok=$instance->movePad($oldId, $newId);
   } catch(Exception $ex) {
     die(json_encode(array("status"=>"error", "msg"=>"$ex")));
   }
 
-  $p = explode('$', $_POST['rename']);
-  $new_group_mapper = sql("SELECT group_mapper FROM padman_group_cache WHERE group_id=?", array($p[0]))[0]['group_mapper'];
-  update_pad($padname, array('group_mapper' => $new_group_mapper, 'group_id' => $p[0], 'pad_name' => $p[1]));
-
+  update_pad($pad['id'], ['group_mapper' => '', 'group_id' => $new_group["group_id"], 'group_alias' => $new_group["group_alias"], 'pad_name' => $newName]);
+  refresh_group($pad["group_alias"]);
+  refresh_group($new_group["group_alias"]);
   die(json_encode(array("status"=>"ok")));
 }
 
@@ -111,25 +127,25 @@ if (isset($_POST['createPadinGroup'])) {
   }
 
   try {
-    $instance->createGroupPad($groupmap[$group], $padname, '');
-    $padid = $groupmap[$group] . '$' . $padname;
-    $db->prepare('INSERT INTO padman_pad_cache (group_mapper, group_id, pad_name, last_edited) VALUES (?,?,?,NOW())')
-       ->execute(array($group, $groupmap[$group], $padname));
+    $db->prepare('INSERT INTO padman_pad_cache (group_mapper, group_id, group_alias, pad_name, last_edited) VALUES (?,?,?,?,NOW())')
+       ->execute(array('', $group["group_id"], $group["group_alias"], $padname));
+    $pad = get_pad_by_id($db->lastInsertId());
+    $instance->createGroupPad($group["group_id"], $group['group_alias'].'_'.$padname, '');
     if (isset($_POST['start_sitzung'])) {
-      update_pad($padid, array("shortlink" => 'si'.date('md')));
-      $instance->setPublicStatus($padid, true);
-      setPassword($padid, $passwd);
+      update_pad($pad["id"], array("shortlink" => 'si'.date('md'), "tags" => ' '.date("Y").' '));
+      $instance->setPublicStatus(ep_pad_id($pad), true);
+      set_pad_password($pad, $passwd);
       
       $starttext = file_get_contents('template-sitzung.txt');
       $starttext = str_replace("{{heute}}", date("d.m.Y"), $starttext);
       $starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
       
-      $instance->setText($padid, $starttext);
+      $instance->setText(ep_pad_id($pad), $starttext);
     }
     
     setcookie("infobox", "<div class='alert alert-success'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
       <h4><i class='glyphicon glyphicon-ok-circle'></i> Pad ".$padname." erfolgreich angelegt!</h4>".
-      '<p><a href="'.SELF_URL.'?group='.$group.'&show='.$padname.'" class="btn btn-success btn-lg">Jetzt öffnen</a></p>
+      '<p><a href="'.SELF_URL.'?group='.$group["group_alias"].'&show='.$padname.'" class="btn btn-success btn-lg">Jetzt öffnen</a></p>
       </div>');
   } catch (Exception $e) {
     setcookie("infobox","<div class='alert alert-danger'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
@@ -138,5 +154,5 @@ if (isset($_POST['createPadinGroup'])) {
 
   }
   header("HTTP/1.1 303 See other");
-  header("Location: ".SELF_URL.$group);
+  header("Location: ".SELF_URL."?group=".$group["group_alias"]);
 }

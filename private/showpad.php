@@ -2,14 +2,14 @@
 if(!$instance) exit;
 
   $padname = htmlspecialchars($_GET['show']);
-  $pad = sql("SELECT * FROM padman_pad_cache WHERE group_mapper=? AND pad_name=?", array($group, $padname))[0];
+  $pad = sql("SELECT * FROM padman_pad_cache WHERE group_alias=? AND pad_name=?", array($group["group_alias"], $padname))[0];
   if (!$pad) {
     header("HTTP/1.1 404 Not Found");
-    load_view("pad_not_found", array("pad" => "$group/$padname"));
+    load_view("pad_not_found", array("pad" => "$group[group_alias]/$padname"));
     return;
   }
   //header("Location: ".$padurl.$padname); #+$padurl+$padname);
-  $padID = $pad['group_id'].'$'.$pad['pad_name'];
+  $padID = ep_pad_id($pad);
   
   $passw = "";
   if ($pad['password']) {
@@ -24,12 +24,12 @@ if(!$instance) exit;
   //note: this does also serve as a check whether this pad does really exist in etherpad lite
   try {
     $result = $instance->getText($padID);
-    $fn = DATA_DIR."/index/".urlencode($group)."/".urlencode($padname).".txt";
+    $fn = DATA_DIR."/index/".urlencode($group["group_alias"])."/".urlencode($padname).".txt";
     @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
     file_put_contents($fn, $result->text);
   } catch(Exception $ex) {
     header("HTTP/1.1 500 Internal Server Error");
-    load_view("error_layout", array("content" => "Das Pad $group/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br>Letzter Inhalt:"."<pre>".htmlspecialchars(file_get_contents(DATA_DIR."/index/$group/$padname.txt"))."</pre>"));
+    load_view("error_layout", array("content" => "Das Pad $group[group_alias]/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br>Letzter Inhalt:"."<pre>".htmlspecialchars(file_get_contents(DATA_DIR."/index/$group[group_alias]/$padname.txt"))."</pre>"));
     return;
   }
 
@@ -41,7 +41,7 @@ if(!$instance) exit;
     $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false"; $tags="";
   }
 
-echo "<meta charset='utf8'><title>$padname - $group - " . HEADER_TITLE . "</title>
+echo "<meta charset='utf8'><title>$padname - $group[menu_title] - " . HEADER_TITLE . "</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <style>
     @import url(css/bootstrap.min.css); 
@@ -60,7 +60,7 @@ echo "<meta charset='utf8'><title>$padname - $group - " . HEADER_TITLE . "</titl
     <a href='#' class='imgbutton pad_opts' title='Pad Properties'><span class='glyphicon glyphicon-cog'></span></a>";
   echo "<a class='imgbutton last pad_export' href='#' title='Export'><span class='glyphicon glyphicon-export'></span></a>";
 
-  echo "<div class='title elipsis'><a href='?group=$group'>$group</a> &#187; $padname $tags  </div>
+  echo "<div class='title elipsis'><a href='?group=$group[group_alias]'>$group[menu_title]</a> &#187; $padname $tags  </div>
     <div class='elipsis'>".$padurl.$padID."</div> </div></div><div class='content col-sm-3'>$passw
     </div><div class='content col-sm-4'>$shortlnk</div></div>";
   
@@ -68,5 +68,5 @@ echo "<meta charset='utf8'><title>$padname - $group - " . HEADER_TITLE . "</titl
   echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
   load_view("modal_options", array());
   load_view("modal_export", array("padID"=>$padID, "shortlnk" => $shortlnk, "shortnam" => $pad['shortlink'], "password" => $pad['password']));
-  echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group . '"); </script>';
+  echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group["group_alias"] . '"); </script>';
   

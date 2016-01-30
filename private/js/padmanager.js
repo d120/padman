@@ -4,6 +4,7 @@ function PadManager() {
   var groupInfo;
   
   function API_Get(method, params, callback) {
+    if (typeof params == "object") params = $.param(params);
     $.post(SELF_URL + "?api=" + method + "&" + params, callback, "json");
   }
   function API_Post(data, callback) {
@@ -14,14 +15,14 @@ function PadManager() {
     if (!$('#pad_list').length) return false;
     var group = this.getAttribute("data-id");
     self.loadGroup(group);
-    window.history.pushState('', 'Pad: '+group, SELF_URL + group);
+    window.history.pushState('', 'Pad: '+group, SELF_URL + "?group=" + escape(group));
     return false;
   });
   
   this.loadGroup = function(groupName) {
     for(var i in padman_data.groups)
-      if (padman_data.groups[i].group_mapper == groupName) groupInfo = padman_data.groups[i];
-    selected_tag = "";
+      if (padman_data.groups[i].group_alias == groupName) groupInfo = padman_data.groups[i];
+    selected_tag = ""; $("#searchBox").val("&"+groupName+" !#archiv");
     $('#main_nav li.active').removeClass('active'); $('#main_nav li[data-id="'+groupName+'"]').addClass('active').closest('li.dropdown').addClass('active');
     updateTags();
     loadPadList();
@@ -57,6 +58,7 @@ function PadManager() {
         $("#pad_shortlink").val(SHORTLNK_PREFIX + pad.shortlink);
       $("#pad_passw").val(pad.password);
       $("#pad_tags").val(pad.tags);
+      setTimeout(function(){ $("#pad_tags").focus().select(); },355);
       
       $dlg.find(".modal-title").html("Einstellungen zum Pad <b><u>"+pad.pad_name+"</u></b>");
       $dlg.find("#delete_dlg p").text("Pad "+pad.pad_name+" wirklich endgültig löschen?");
@@ -101,7 +103,10 @@ function PadManager() {
   }
 
   $("#pad_tags").change(function() {
-    API_Post({ "pad_id" : currentEditPadID, "set_tags" : $("#pad_tags").val() });
+    API_Post({ "pad_id" : currentEditPadID, "set_tags" : $("#pad_tags").val() },
+    function(data) {
+      loadPadList();
+    });
   });
   
   $("#edit_shortlink").click(function() {
@@ -160,7 +165,7 @@ function PadManager() {
   //--> Rename pad
   if (padman_data)
       for(var k in padman_data.groups)
-        $("#rename_group").append("<option value='"+padman_data.groups[k].group_id+"'>"+padman_data.groups[k].group_mapper+"</option>");
+        $("#rename_group").append("<option value='"+padman_data.groups[k].group_alias+"'>"+padman_data.groups[k].menu_title+"</option>");
 
   $(document).on('click', '.pad_rename', function(e) {
     var $dlg = $("#modal_rename");
@@ -168,20 +173,22 @@ function PadManager() {
     var $line = $(e.target).closest("[data-padID]");
     currentEditPadID = $line.attr("data-padID");
     
-    var shortName = currentEditPadID.substr(currentEditPadID.indexOf("$")+1);
+    var shortName = $line.attr("data-padName");
     $("#rename_pad").val(shortName);
     
     //$(".navbar-nav a").each(function() { $("#rename_group").append("<option>"+$(this).text()+"</option>"); });
-    $("#rename_group").val(groupInfo.group_id);
+    $("#rename_group").val(groupInfo.group_alias);
     $dlg.modal("show");
   });
   $("#confirm_rename").click(function() {
-    renamePad(currentEditPadID, $("#rename_group").val()+'$'+$("#rename_pad").val());
+    renamePad(currentEditPadID, $("#rename_group").val(), $("#rename_pad").val());
   });
-  function renamePad(oldID, newID) {
+  function renamePad(oldID, newGroupAlias, newPadName) {
+    if (!newGroupAlias) throw ("new Group Alias must not be empty");
+    if (!newPadName) throw ("new Pad Name must not be empty");
     $("#modal_rename .rename").hide(); $("#modal_rename .pleasewait").show(); $("#modal_rename .modal-footer button").attr("disabled",true);
     var x=0,progress=setInterval(function (){ $("#modal_rename .progress-bar").css("width",x+"%"); x++; }, 100);
-    API_Post({ "pad_id" : oldID, "rename" : newID },
+    API_Post({ "pad_id" : oldID, "rename" : newPadName, "new_group": newGroupAlias },
     function(data) {
       if (data.msg) alert(data.msg);
       clearInterval(progress);
@@ -190,16 +197,15 @@ function PadManager() {
     });
   }
   
-  $("#grouplist-navbar li").droppable({
+  $("#grouplist-navbar li[data-id]").droppable({
     activeClass: "ui-state-hover",
     hoverClass: "ui-state-active",
     tolerance: "pointer",
     drop: function(event, ui) {
       $("#modal_rename").modal("show");
-      var oldPadID = ui.helper.context.getAttribute("data-padid"), p = oldPadID.split(/\$/);
-      var newID = getGroupByMapper(this.getAttribute("data-id")).group_id + '$' + p[1];
-      console.log(p, this.getAttribute("data-name"), this, newID);
-      renamePad(oldPadID, newID);
+      var oldPadID = ui.helper.context.getAttribute("data-padid"), padName = ui.helper.context.getAttribute("data-padname");
+      console.log(this)
+      renamePad(oldPadID, this.getAttribute("data-id"), padName);
     }
   });
   
@@ -207,9 +213,9 @@ function PadManager() {
     for(var i in padman_data.groups)
       if (padman_data.groups[i].group_id == id) return padman_data.groups[i];
   }
-  function getGroupByMapper(mapper) {
+  function getGroupByAlias(mapper) {
     for(var i in padman_data.groups)
-      if (padman_data.groups[i].group_mapper == mapper) return padman_data.groups[i];
+      if (padman_data.groups[i].group_alias == mapper) return padman_data.groups[i];
   }
   
   function updateTags() {
@@ -222,12 +228,12 @@ function PadManager() {
     });
   }
   
-  function loadPadList() {
+  function loadPadList(offset) {
     $("#pad_list").html("<div class='loader'></div>");
-    API_Get("list", "group=" + groupInfo.group_mapper + "&tag=" + selected_tag, function(result) {
+    API_Get("search", { q: $("#searchBox").val(), 'output': 'longjson', 'offset': offset }, function(result) {
       var q = '<div class="table-responsive"><table class="table table-hover">\
-        <thead><tr><th width=30></th><th>Name</th><th width=350>Passwort</th><th width=100></th></tr></thead><tbody>';
-      result.pads.forEach(function(PAD) {
+       <tbody>';
+      result.result.forEach(function(PAD) {
         if (PAD["access_level"] == 1) {
           var icon_html = '<span class="glyphicon glyphicon-globe"></span> ';
         } else{
@@ -235,50 +241,43 @@ function PadManager() {
         }
         
         q+= '\
-        <tr data-padID="'+PAD.group_id+'$'+PAD.pad_name+'"> \
-          <td class="pad_icon icon"><!--button type="button" class="btn btn-link btn-xs"-->\
+        <tr data-padID="'+PAD.id+'" data-padName="'+PAD.pad_name+'"> \
+          <td class="pad_icon icon" width=30><!--button type="button" class="btn btn-link btn-xs"-->\
             '+icon_html+'\
           <!--/button--></td>\
-          <td class="name"><a href="'+SELF_URL+'?group='+PAD.group_mapper+'&show='+PAD.pad_name+'">'+PAD.pad_name+'</a></td><td>';
-        if (PAD.password) q+= ' <code>'+PAD.password+'</code>';
+          <td class="name"><a href="'+SELF_URL+'?group='+PAD.group_alias+'&show='+PAD.pad_name+'">'+PAD.pad_name+'</a>';
         q+= ' <span class="pull-right"> ';
+        if (PAD.tags) PAD.tags.match(/[^ ]+/g).forEach(function(tag) {
+          q+= '<span class="label label-primary">#' + tag + '</span> ';
+        });
         if (PAD.access_level==1) q+= '<span class="label label-success ">Öffentlich</span> ';
+        if (PAD.password) q+= ' <span class="label label-default" title="'+PAD.password+'"><small><i class="glyphicon glyphicon-lock"></i></small></span> ';
         if (PAD.last_edited_formatted)
           q+= '<span class="label label-default ">'+PAD.last_edited_formatted+'</span> ';
-        q+= '</span></td><td><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>\
+        q+= '</span></td><td width=100><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>\
            <button class="btn btn-xs btn-default pad_rename" title="Umbenennen"><i class="glyphicon glyphicon-pencil"></i></button>\
-          <a href="'+SELF_URL+'?group='+PAD.group_mapper+'&show='+PAD.pad_name+'" target="_blank" class="btn btn-xs btn-default open_popup" title="In neuem Fenster öffnen"><i class="glyphicon glyphicon-new-window"></i></a>\
+          <a href="'+SELF_URL+'?group='+PAD.group_alias+'&show='+PAD.pad_name+'" target="_blank" class="btn btn-xs btn-default open_popup" title="In neuem Fenster öffnen"><i class="glyphicon glyphicon-new-window"></i></a>\
           </td></tr>';
       });
       q += "</tbody></table></div>";
-      if (result.pads.length == 0) q += "<div style='padding:100px 0;text-align:center;color:#aaa;'>- In dieser Kategorie gibt es noch keine Pads -</div>";
+      if (result.next_page_offset) { q+="<div style='padding:10px 10px 40px;text-align:center;color:#777'>Weitere Ergebnisse zu dieser Abfrage verfügbar</div>"; }
+      if (result.result.length == 0) q += "<div style='padding:100px 0;text-align:center;color:#aaa;'>- In dieser Kategorie gibt es noch keine Pads -</div>";
       
       
       $("#pad_list").html(q);
-      
+
       $("#pad_list tr").draggable({ handle: ".pad_icon", revert: true, helper: "clone",
                                     cursorAt: { top: 15, left: 15 }, opacity: 0.7  });
       
     });
     $("#createSitzungPadForm").toggle(groupInfo.group_mapper == "sitzung");
-    $("#cur_group_name").text(groupInfo.group_mapper);
-    $(".group_form").attr("action", SELF_URL + "?group=" + escape(groupInfo.group_mapper));
-    $(".create_pad_name").attr("placeholder", "neues Pad in " + groupInfo.group_mapper);
+    $("#cur_group_name").text(groupInfo.menu_title);
+    $(".group_form").attr("action", SELF_URL + "?group=" + escape(groupInfo.group_alias));
+    $(".create_pad_name").attr("placeholder", "neues Pad in " + groupInfo.menu_title);
   }
 
   $("#searchBox").keyup(function(e) {
-    var q = $("#searchBox").val();{}
-    var $qs = $("#quickSearch");
-    if (!q) { $qs.hide(); return; }
-    API_Get("search", "q="+escape(q), function(r) {
-      $qs.html("");
-      r.result.forEach(function(d) {
-        $qs.append("<a href='"+SELF_URL+"?group="+d.group_mapper+"&show="+d.pad_name+"'>" + d.group_mapper+"/" + d.pad_name + "</li>");
-      });
-      var pos = $("#searchBox").offset();
-      $qs.css({ "top": pos.top+30+"px", "left": pos.left-15+"px" });
-      $qs.show();
-    });
+     loadPadList();
   });
 
   $("#taglist").click(function(e) {
@@ -286,6 +285,7 @@ function PadManager() {
     var $tag = $(e.target).attr("class", "btn btn-xs btn-primary");
     selected_tag = $tag.text();
     if (selected_tag == "(alle)") selected_tag = "";
+    $("#searchBox").val("&"+groupInfo.group_alias + (selected_tag ? " #"+selected_tag : ""));
     loadPadList();
   });
 

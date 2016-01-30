@@ -9,6 +9,14 @@
 #grouplist-navbar li.ui-state-active { background: #ddffdd; }
 .ui-draggable-dragging { width: 400px; z-index: 2000; }
 
+.dropdown-submenu ul.dropdown-menu {
+    position: inherit;
+    display: block;
+    border: 0;
+    box-shadow: inherit;
+    float: none;
+}
+
 @media screen and (min-width: 800px) {
     .panel-header-form { float: right; margin-top:-5px; padding-left: 20px; }
 }

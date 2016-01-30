@@ -21,14 +21,14 @@ if (preg_match('#/?([a-z0-9-]+)$#', $url, $res)) {
        .padlink { background: #fefe00; padding: 5px 10px; color: #000; font-weight: bold; }
        .padlink.active { background: #55bb55; color:white;  }</style>
        </head><body>\n";
-    echo '<div id="toolbar"><a href="/pad/?group='.htmlentities(urlencode($pad['group_mapper'])).'&show='.htmlentities(urlencode($pad['pad_name'])).'">Login</a>';
+    echo '<div id="toolbar"><a href="/pad/?group='.htmlentities(urlencode($pad['group_alias'])).'&show='.htmlentities(urlencode($pad['pad_name'])).'">Login</a>';
     if (count($pads) > 1) {
       foreach($pads as $padlink) {
-        echo ' <a href="'.htmlentities(PAD_URL. $padlink['group_id'].'$'.$padlink['pad_name']).'" target="i" class=padlink>'.$padlink['pad_name'].'</a>';
+        echo ' <a href="'.htmlentities(PAD_URL. ep_pad_id($padlink)).'" target="i" class=padlink>'.$padlink['pad_name'].'</a>';
       }
     }
     echo '</div>';
-    echo '<iframe name=i src="'.htmlentities(PAD_URL. $pad['group_id'].'$'.$pad['pad_name']).'"></iframe>
+    echo '<iframe name=i src="'.htmlentities(PAD_URL. ep_pad_id($pad)).'"></iframe>
        <script>
        document.getElementById("toolbar").onclick=function(e){
        try{document.querySelector(".padlink.active").className="padlink";}catch(x){}

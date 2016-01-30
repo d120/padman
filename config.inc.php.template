@@ -17,9 +17,6 @@ define("API_URL", 'http://127.0.0.1:9001/api');
 
 define("ADD_GROUP_LINK", "mailto:admin@example.org?subject=Etherpad%20-%20Bitte%20Neue%20Gruppe%20Anlegen");
 
-// modify the categories shown on the page
-$GROUP_TITLES = array("Category1", "Category2");
-
 // set to non-empty to require a password for pad deletion
 define("DELETE_PASSWORD", "");
 define("ALLOW_ANON_PAD_CREATE", false);

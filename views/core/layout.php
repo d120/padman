@@ -46,25 +46,32 @@
 
 
 <?php
-function listItem($name) { global $current_group;
-	$url = SELF_URL.strtolower($name);
+function listItem($item, $name) { global $current_group;
+	$url = SELF_URL."?group=".urlencode($item["group_alias"]);
 	if ($current_group === strtolower($name)) {
-		echo "<li data-id=\"".strtolower($name)."\" class=\"active\"><a href=\"$url\">".$name."</a></li>";
+		echo "  <li data-id=\"$item[group_alias]\" class=\"active\"><a href=\"$url\">".$name."</a></li>\n";
 	} else {
-		echo "<li data-id=\"".strtolower($name)."\"><a href=\"$url\">".$name."</a></li>";
+		echo "  <li data-id=\"$item[group_alias]\"><a href=\"$url\">".$name."</a></li>\n";
 	}
 }
-foreach($group_titles as $a){
-	if (is_array($a)) {
-		echo "<li class=dropdown><a href='#' class=dropdown-toggle data-toggle=dropdown>$a[0] <span class=caret></span></a><ul class=dropdown-menu>";
-		for($i = 1; $i < count($a); $i++) {
-			listItem($a[$i]);
-		}
-		echo "</ul></li>";
-	} else {
-		listItem($a);
-	}
+$indent = 1;
+$lastMenu = [];
+foreach($groups as $d){
+  $alias = explode("/", $d["menu_title"]);
+  for(; $indent > count($alias) || ($indent > 1 && $lastMenu[$indent-2] != $alias[$indent-2]); $indent--) {
+    echo "</ul></li>\n";
+  }
+  for(; $indent < count($alias); $indent++) {
+    if($indent==1)echo "<li class=dropdown><a href='#' class=dropdown-toggle data-toggle=dropdown>".$alias[$indent-1]." <span class=caret></span></a><ul class=dropdown-menu>\n";
+    else echo "<li class='dropdown-submenu dropdown-header'><b>".$alias[$indent-1]."</b><ul class='dropdown-menu'>";
+  }
+  listItem($d, $alias[count($alias)-1]);
+  $lastMenu = $alias;
 }
+for(; $indent > 1; $indent--) {
+  echo "</ul></li>\n";
+}
+
 ?>
     <li><a href="<?= ADD_GROUP_LINK ?>"><i class="glyphicon glyphicon-plus"></i></a></li>
       </ul>
@@ -171,7 +178,7 @@ foreach($group_titles as $a){
 
     <script>
     var padMan = new PadManager();
-    padMan.loadGroup(<?= json_encode($current_group) ?>);
+    padMan.loadGroup(<?= json_encode($current_group["group_alias"]) ?>);
     </script>
 
 <div class="footer container">
