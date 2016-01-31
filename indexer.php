@@ -1,6 +1,6 @@
 <?php
 $verbose = false;
-if (!$argv[1] || $argv[1]!="test") exit;
+if (isset($argv[1]) || $argv[1]=="-v") $verbose=true;
 
 include "init.php";
 try{
@@ -24,11 +24,14 @@ foreach($groups as $group) {
   $pads = sql("SELECT * FROM padman_pad_cache WHERE group_alias=?", [$group["group_alias"]]);
   foreach($pads as $pad) {
     $padID = ep_pad_id($pad);
-    echo "$padID\n";
+    if($verbose)echo "$padID\n";
     try {
       $tmpTimest = $instance->getLastEdited($padID);
       $tmpPublic = $instance->getPublicStatus($padID);
-      $updateQ->execute([  floor($tmpTimest->lastEdited/1000), $tmpPublic->publicStatus ? 1 : 0, $pad["id"] ]);
+      $timestamp = floor($tmpTimest->lastEdited/1000);
+      $accessLevel = $tmpPublic->publicStatus ? 1 : 0;
+      if($verbose)echo "   $timestamp    $accessLevel\n";
+      $updateQ->execute([  $timestamp, $accessLevel, $pad["id"] ]);
     } catch(Exception $ex) {
       echo "Pad $padID found in DB, but not in Etherpad! Please check!\n$ex\n";
       $updateQ->execute([ 0, 999, $pad["id"] ]);
