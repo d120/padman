@@ -1,7 +1,16 @@
 # padman - etherpad-lite management front-end
 
-To install, git clone this repository into your www root. Rename config.inc.php.template 
-to config.inc.php and change the configuration appropriately.
+To install:
+* git clone this repository into an appropriate folder (e.g. /var/www/padman).
+* Configure your web server according to the section "Server configuration" below.
+* Initialize the database according to the "Database" section below.
+* Rename config.inc.php.template to config.inc.php and change the configuration appropriately.
+* Set up a cron job to run `bash -c 'cd /var/www/padman && php indexer.php'` regularly (at least every hour).
+  
+  ```
+  echo '#!/bin/bash' > /etc/cron.hourly/padman-indexer
+  echo 'sudo -u www-data bash -c \'cd /var/www/padman && php indexer.php\'' >> /etc/cron.hourly/padman-indexer
+  ```
 
 ## Server configuration
 
@@ -46,6 +55,67 @@ RewriteRule ^(.*)$ /pp/redirect.php?lnk=$1 [L]
 
 </Directory>
 ```
+
+
+## Database
+
+The most recent version of Padman doesn't rely on the group and pad lists provided
+by the etherpad-lite api as they are quite slow. Therefore, a few database tables are
+required to store groups, pads and per-user configuration.
+
+Create a new mysql database on your server or use an existing one (all tables are 
+prefixed `padman_`). Import the file `install.sql` into the database:
+
+    mysql MY_DATABASE < install.sql
+
+
+Edit the table `padman_group` with a MySQL administration tool of your choice and create
+a row for every group. You need to fill in the columns as described below:
+
+| Column      | Description                                           |
+|-------------|-------------------------------------------------------|
+| id          | (automatically generated index)                       |
+| group_alias | A short name for the group. Visible in the URL. Must only consist of letters, numbers, underscores. Difficult to change.  |
+| menu_title  | The menu path for the group. Create sub-menus by using slashes (e.g. menu_title = "Main group/Sub group/Subsubgroup"). Can be changed any time. |
+| position    | The menu will be sorted by this column. |
+| group_mapper | Internal group name for etherpad-lite. Not visible to the user. Many groups can share the same group_mapper. See the section "Group Sessions" below. |
+| group_id    | (leave blank, will be auto generated later)            |
+| tags        | (leave blank, will be auto generated later)            |
+
+Afterwards, go to the padman folder and run the below command:
+
+    php update_groups.php --update
+
+If this does not work, you probably did not correctly fill in the API_KEY and API_URL fields in  config.inc.php,
+or your etherpad-lite is not running.
+
+
+## Group Sessions
+
+When a user opens padman for the first time, or after his session has expired, padman needs to
+ask etherpad-lite to generate session ids. For every group_mapper, a different session id is generated.
+The generation of one session id takes about a third of a second. So if you have many different 
+group_mappers, you/your users will have to wait quite a long time before they can use padman.
+
+Usually, you can just use one group_mapper for all groups (e.g. just put "padman" in the 
+column "group_mapper" for all groups).
+
+But if you want to have group-wise access control, you need to set different group_mappers for
+the groups different users should be allowed to access.
+
+Example:
+
+User A may see group 1,2,3,4. User B may see group 1,2. 
+
+Then you could set up these group_mappers:
+
+| group_alias | group_mapper |
+|-------------|--------------|
+| group1      | somegroups    |
+| group2      | somegroups    |
+| group3      | secretgroups  |
+| group4      | secretgroups  |
+
 
 ## Links
 

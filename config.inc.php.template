@@ -4,11 +4,12 @@
 define("HEADER_H1", "<b>Etherpad</b> Manager");
 define("HEADER_LOGO_URL", "/css/sample_logo.png");
 define("HEADER_ACCENT_COLOR", "#AAFFEE");
+define("HEADER_TITLE", "Etherpad Manager");
 
 // URL
 define("HOST_NAME", "www.example.com");
 define("PAD_URL", "https://www.example.com/etherpad/p/");
-define("SELF_URL", "/pad/");
+define("SELF_URL", "/pad/"); // only the path, NO hostname
 
 // insert here the contents of APIKEY.txt from your etherpad-lite directory
 define("API_KEY", '');
