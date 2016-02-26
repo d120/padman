@@ -45,7 +45,7 @@ class EtherpadLiteClient {
     if (function_exists('curl_init')){
       $c = curl_init($url);
       curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($c, CURLOPT_TIMEOUT, 20);
+      curl_setopt($c, CURLOPT_TIMEOUT, 60);
       if ($method === 'POST'){
         curl_setopt($c, CURLOPT_POST, true);
         curl_setopt($c, CURLOPT_POSTFIELDS, $arguments);
