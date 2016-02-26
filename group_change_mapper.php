@@ -22,8 +22,8 @@ $pads = sql("SELECT * FROM padman_pad_cache where group_alias=? and group_id=?",
 foreach ($pads as $pad) {
   $fromName = ep_pad_id($pad);
   $toName = $newmapGroup->groupID.'$'.$thegroup["group_alias"].'_'.$pad["pad_name"];
-  $instance->movePad($fromName, $toName);
   echo "Rename: $fromName -> $toName\n";
+  $instance->movePad($fromName, $toName);
 }
 
 $updateQ->execute([ $newmapGroup->groupID, $thegroup["group_alias"] ]);
