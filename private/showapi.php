@@ -103,6 +103,9 @@ if (isset($_POST['rename']) && isset($_POST['pad_id']) && isset($_POST['new_grou
   try {
     $oldId = ep_pad_id($pad); $newId = $new_group['group_id'].'$'.$new_group['group_alias'].'_'.$newName;
     #var_dump($oldId, $newId);
+    // dangerous stuff going on here...
+    ignore_user_abort(true); set_time_limit(120);
+    // movePad takes ages on pads with many revisions
     $ok=$instance->movePad($oldId, $newId);
   } catch(Exception $ex) {
     die(json_encode(array("status"=>"error", "msg"=>"$ex")));
