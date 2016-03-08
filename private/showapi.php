@@ -62,7 +62,7 @@ if (isset($_POST['set_public']) && isset($_POST['pad_id'])) {
   $sl = null;
   if ($public) {
     if (isset($_POST['shortlnk'])) $sl = preg_replace('/[^a-z0-9]/','',$_POST['shortlnk']);
-    if (!$sl) $sl = substr(md5($padname),0,7);
+    if (!$sl) $sl = substr(md5(API_KEY.ep_pad_id($pad)),0,8);
   }
   update_pad($pad['id'], array('shortlink' => $sl, 'access_level' => $public ? 1 : 0));
   die(json_encode(array("status"=>"ok","shortlnk"=>SHORTLNK_PREFIX.$sl)));
