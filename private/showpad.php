@@ -37,16 +37,21 @@ if(!$instance) exit;
 
   if ($pad['access_level'] == 1) {
     $icon_html = '<span class="glyphicon glyphicon-globe"></span> '; $public="true"; $tags="<span class='label label-success'>öffentlich</span>";
+    $shortlink_pads = sql("SELECT * FROM padman_pad_cache WHERE shortlink = ? ORDER BY pad_name", array($pad['shortlink']));
   } else{
     $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false"; $tags="";
   }
 
+    echo '</div>';
 echo "<meta charset='utf8'><title>$padname - $group[menu_title] - " . HEADER_TITLE . "</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <style>
     @import url(css/bootstrap.min.css); 
     @import url(css/pads.css);
     html, body { margin: 0; padding: 0; }
+    .padlinks { display: table; width: 100%; }
+    .padlink { display: table-cell; padding: 5px; font-weight: bold; color: #222; background: #fefe00; border-right: 6px solid #fff; }
+    .padlink.active { background: #333; color: #eee; }
     </style>
     <script src='js/jquery.js'></script>
     <script src='js/bootstrap.min.js'></script>
@@ -63,7 +68,15 @@ echo "<meta charset='utf8'><title>$padname - $group[menu_title] - " . HEADER_TIT
   echo "<div class='title elipsis'><a href='?group=$group[group_alias]'>$group[menu_title]</a> &#187; $padname $tags  </div>
     <div class='elipsis'>".$padurl.$padID."</div> </div></div><div class='content col-sm-3'>$passw
     </div><div class='content col-sm-4'>$shortlnk</div></div>";
-  
+
+  if (count($shortlink_pads) > 1) {
+    echo '<div class="padlinks">';
+    foreach($shortlink_pads as $padlink) {
+      echo ' <a href="?group='.$padlink['group_alias'].'&show='.htmlentities($padlink['pad_name']).'" class="padlink'.($padlink['id']==$pad['id']?' active':'').'">'.$padlink['pad_name'].'</a>';
+    }
+    echo "</div>";
+  }
+
   echo "</div>";
   echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
   load_view("modal_options", array());

@@ -3,10 +3,6 @@ $verbose = false;
 if (!$argv[1] || $argv[1]!="--update") exit;
 
 include "init.php";
-try{
-  $passwords = json_decode(file_get_contents('data/passwords.json'), true);
-  $shortlinks = json_decode(file_get_contents('data/shortlnk.json'), true);
-} catch(Exception $ex){ $passwords=array();$shortlinks=array(); }
 
 
 $instance = new EtherpadLiteClient(API_KEY, API_URL);

@@ -21,6 +21,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <link rel="icon" href="css/favicon.ico">
   </head>
 <!--<div class="alert alert-warning" role="alert">Der PadMan hat eine neue interne Struktur und ein paar neue Funktionen, aber vielleicht auch ein paar neue Bugs. Bitte schau daher bei jeder Aktion nach, ob es geklappt hat. Probleme bitte bei mweller@d120.de oder <a href="https://github.com/d120/padman/issues">als Issue</a> melden. Vielen Dank. <small class="pull-right">Diese Meldung verschwindet die Tage automatisch&trade;.</small></div>
 -->
@@ -100,7 +101,7 @@ for(; $indent > 1; $indent--) {
 
 <?php if ($allow_pad_create): ?>
 		<div class="form-group-sm">
-		     <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name">
+		     <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name" pattern="^[a-zA-Z0-9._-]+$">
 		   <button type="submit" class="btn btn-sm btn-success" name="createPadinGroup">Pad erstellen</button>
 		</div>
 		 </form>
@@ -156,7 +157,7 @@ for(; $indent > 1; $indent--) {
       </div>
       <div class="modal-body rename">
         Gib einen neuen Namen für das Pad ein:<br>
-	<input type="text" id="rename_pad" class="form-control"><br><br>
+	<input type="text" id="rename_pad" class="form-control" pattern="^[a-zA-Z0-9._-]+$"><br><br>
 	Falls du das Pad verschieben möchtest, wähle die neue Kategorie aus:<br>
 	<select id="rename_group" class="form-control"></select>
       </div>

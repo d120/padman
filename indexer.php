@@ -1,6 +1,6 @@
 <?php
 $verbose = false;
-if (isset($argv[1]) || $argv[1]=="-v") $verbose=true;
+if (isset($argv[1]) && $argv[1]=="-v") $verbose=true;
 
 include "init.php";
 try{
