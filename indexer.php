@@ -4,8 +4,8 @@ if (isset($argv[1]) && $argv[1]=="-v") $verbose=true;
 
 include "init.php";
 try{
-  $passwords = json_decode(file_get_contents('data/passwords.json'), true);
-  $shortlinks = json_decode(file_get_contents('data/shortlnk.json'), true);
+  $passwords = @json_decode(@file_get_contents('data/passwords.json'), true);
+  $shortlinks = @json_decode(@file_get_contents('data/shortlnk.json'), true);
 } catch(Exception $ex){ $passwords=array();$shortlinks=array(); }
 
 
