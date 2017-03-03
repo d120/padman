@@ -11,4 +11,3 @@ load_view("error_layout", array(
   "login" => array("cn" => $author_cn, "name" => $author_name), "content" => $content
 ));
 
-

@@ -2,7 +2,7 @@ function PadManager() {
   var self = this;
   var selected_tag = "";
   var groupInfo;
-  
+
   function API_Get(method, params, callback) {
     if (typeof params == "object") params = $.param(params);
     $.post(SELF_URL + "?api=" + method + "&" + params, callback, "json");
@@ -10,7 +10,7 @@ function PadManager() {
   function API_Post(data, callback) {
     $.post(SELF_URL, data, callback, "json");
   }
-  
+
   $('#main_nav [data-id]').click(function() {
     if (!$('#pad_list').length) return false;
     var group = this.getAttribute("data-id");
@@ -18,7 +18,7 @@ function PadManager() {
     window.history.pushState('', 'Pad: '+group, SELF_URL + "?group=" + escape(group));
     return false;
   });
-  
+
   this.loadGroup = function(groupName) {
     for(var i in padman_data.groups)
       if (padman_data.groups[i].group_alias == groupName) groupInfo = padman_data.groups[i];
@@ -252,6 +252,7 @@ function PadManager() {
         });
         if (PAD.access_level==1) q+= '<span class="label label-success ">Öffentlich</span> ';
         if (PAD.password) q+= ' <span class="label label-default" title="'+PAD.password+'"><small><i class="glyphicon glyphicon-lock"></i></small></span> ';
+        if (PAD.is_archived==1) q+= ' <span class="label label-warning" title="Archiviert"><small><i class="glyphicon glyphicon-scissors"></i> Archiviert</small></span> ';
         if (PAD.last_edited_formatted)
           q+= '<span class="label label-default ">'+PAD.last_edited_formatted+'</span> ';
         q+= '</span></td><td width=100><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>\

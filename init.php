@@ -71,7 +71,21 @@ function update_pad($padid, $update) {
   $args[] = $padid;
   $q->execute($args);
 }
+function dump_pad_to_file($padID, $padname, $group) {
+  global $instance;
 
+  $result = $instance->getHTML($padID);
+  if(!$result->html) throw new Exception("dump_pad_to_file failed!");
+  $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($padname).".html";
+  @mkdir(DATA_DIR."/archive"); @mkdir(dirname($fn));
+  file_put_contents($fn, $result->html);
+
+  $result = $instance->getText($padID);
+  if(!$result->text) throw new Exception("dump_pad_to_file failed!");
+  $fn = DATA_DIR."/index/".urlencode($group["group_alias"])."/".urlencode($padname).".txt";
+  @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
+  file_put_contents($fn, $result->text);
+}
 function refresh_group($group_alias) {
   global $db;
   $tags = array();

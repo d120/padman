@@ -10,26 +10,30 @@ if(!$instance) exit;
   }
   //header("Location: ".$padurl.$padname); #+$padurl+$padname);
   $padID = ep_pad_id($pad);
-  
+
   $passw = "";
   if ($pad['password']) {
     $passw = "Passwort: <input type='text' value='$pad[password]' readonly ondblclick='event.stopPropagation();return false' onclick='this.select()' id='padview_pw'>";
     setcookie("password", $pad['password'], 0, PAD_URL);
   }
-  
+
   $shortlnk = "";
   if ($pad['shortlink']) $shortlnk = "Kurz-Link: <br><b><a href='".SHORTLNK_PREFIX.$pad['shortlink']."' class='elipsis'>".SHORTLNK_PREFIX.$pad['shortlink']."</a></b>";
-  
+
   //cache content
   //note: this does also serve as a check whether this pad does really exist in etherpad lite
   try {
-    $result = $instance->getText($padID);
-    $fn = DATA_DIR."/index/".urlencode($group["group_alias"])."/".urlencode($padname).".txt";
-    @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
-    file_put_contents($fn, $result->text);
+    dump_pad_to_file($padID, $padname, $group);
   } catch(Exception $ex) {
     header("HTTP/1.1 500 Internal Server Error");
-    load_view("error_layout", array("content" => "Das Pad $group[group_alias]/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br>Letzter Inhalt:"."<pre>".htmlspecialchars(file_get_contents(DATA_DIR."/index/$group[group_alias]/$padname.txt"))."</pre>"));
+    if ($pad["is_archived"]) {
+      $errmsg = "Das Pad <b>$group[group_alias]/$padname</b> wurde automatisch archiviert, da es seit ".ARCHIVE_AFTER_MONTHS." Monaten nicht verwendet wurde.<br>Du kannst es jederzeit ohne seine History einfach wiederherstellen.<br><br>
+      <form action='?' method='post'><input type='submit' value='Pad wiederherstellen' class='btn btn-success btn-large'><input type='hidden' name='restore_archived_pad' value='$pad[id]'></form><br>";
+    } else {
+      $errmsg = "Das Pad $group[group_alias]/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br>";
+    }
+    $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($padname).".html";
+    load_view("error_layout", array("content" => $errmsg."<b>Letzter Inhalt:</b><br><br><div class=well>".file_get_contents($fn)."</div>"));
     return;
   }
 

@@ -118,9 +118,29 @@ if (isset($_POST['rename']) && isset($_POST['pad_id']) && isset($_POST['new_grou
 }
 
 
+if (isset($_POST['restore_archived_pad'])) {
+  $pad = get_pad_by_id(intval($_POST['restore_archived_pad']));
+  if (!$pad ||  ! $pad['is_archived']) die(json_encode(["status" => "not_archived"]));
+
+  $group = sql("SELECT * FROM padman_group WHERE group_alias=?", array($pad['group_alias']))[0];
+
+  $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($pad['pad_name']).".html";
+  $archived_html = file_get_contents($fn);
+  if (!$archived_html) die(json_encode(["status" => "restore_failed"]));
+
+  $instance->createGroupPad($group["group_id"], $group['group_alias'].'_'.$pad['pad_name'], '');
+  update_pad($pad["id"], array( "tags" => ' '.date("Y").' ' , "is_archived" => 0 ));
+  $instance->setHTML(ep_pad_id($pad), $archived_html);
+  $ok=$instance->setPassword(ep_pad_id($pad), $pad['password']);
+  $ok=$instance->setPublicStatus(ep_pad_id($pad), $pad['access_level'] == 1);
+
+  header("Location: ".SELF_URL.'?group='.$group["group_alias"].'&show='.$pad['pad_name']);
+  exit;
+}
+
+
 // response to create pad form
 if (isset($_POST['createPadinGroup'])) {
-  
   if (isset($_POST['start_sitzung'])) {
     $padname = 'Sitzung' . date('Ymd');
     $passwd = mt_rand(10000, 99999);
@@ -138,14 +158,14 @@ if (isset($_POST['createPadinGroup'])) {
       update_pad($pad["id"], array("shortlink" => 'si'.date('md'), "tags" => ' '.date("Y").' '));
       $instance->setPublicStatus(ep_pad_id($pad), true);
       set_pad_password($pad, $passwd);
-      
+
       $starttext = file_get_contents('template-sitzung.txt');
       $starttext = str_replace("{{heute}}", date("d.m.Y"), $starttext);
       $starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
-      
+
       $instance->setText(ep_pad_id($pad), $starttext);
     }
-    
+
     setcookie("infobox", "<div class='alert alert-success'><button type='button' class='close' onclick='location=location.href'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
       <h4><i class='glyphicon glyphicon-ok-circle'></i> Pad ".$padname." erfolgreich angelegt!</h4>".
       '<p><a href="'.SELF_URL.'?group='.$group["group_alias"].'&show='.$padname.'" class="btn btn-success btn-lg">Jetzt öffnen</a></p>
