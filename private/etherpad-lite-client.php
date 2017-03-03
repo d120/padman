@@ -10,8 +10,8 @@ class EtherpadLiteClient {
   const CODE_INVALID_API_KEY    = 4;
 
   protected $apiKey = "";
-  protected $baseUrl = "http://localhost:9001/api";
-  
+  protected $baseUrl = "http://localhost:3038/api";
+
   public function __construct($apiKey, $baseUrl = null){
     if (strlen($apiKey) < 1){
       throw new InvalidArgumentException("[{$apiKey}] is not a valid API key");

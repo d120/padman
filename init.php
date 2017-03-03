@@ -122,7 +122,7 @@ function create_sessions() {
         $sessions[] = $instance->createSession($groupmap[$group_name], $authorID, $validUntil)->sessionID;
         $timing.="cs($group_name,".$groupmap[$group_name].") ".(microtime(true)-$time_start).";";
     }
-header("X-Timing: $timing");
+    header("X-Timing: $timing");
     setcookie('sessionIDExpiration', time(), $validUntil, '/', HOST_NAME);
     setcookie('sessionID', implode(",",$sessions), $validUntil, '/', HOST_NAME);
   }
