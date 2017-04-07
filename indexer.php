@@ -37,7 +37,7 @@ foreach($groups as $group) {
       }
       $updateQ->execute([ $timestamp, $accessLevel, $pad["id"] ]);
     } catch(Exception $ex) {
-      fprintf(STDERR, "%s", "Pad $padID found in DB, but not in Etherpad! Please check!\n$ex\n";
+      fprintf(STDERR, "%s", "Pad $padID found in DB, but not in Etherpad! Please check!\n$ex\n");
       $updateQ->execute([ 0, 999, $pad["id"] ]);
     }
   }
