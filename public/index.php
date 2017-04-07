@@ -28,7 +28,8 @@ if (preg_match('#/?([a-z0-9-]+)$#', $url, $res)) {
        #toolbar{padding: 5px; position: fixed; bottom: 0; left: 10px; background: #bbb;}
        .padlink { background: #fefe00; padding: 5px 10px; color: #000; font-weight: bold; }
        .padlink.active { background: #55bb55; color:white;  }
-       .archived { padding: 10px; font: 12pt 'Helvetica',sans-serif; }  </style>
+       .text { padding: 10px; }  body { font: 12pt 'Helvetica',sans-serif; } 
+       .archived { padding: 10px; background: #fea; } </style>
        </head><body>\n";
     echo '<div id="toolbar"><a href="/pad/?group='.htmlentities(urlencode($pads[0]['group_alias'])).'&show='.htmlentities(urlencode($pads[0]['pad_name'])).'">Login</a>';
     if (count($pads) > 1) {
@@ -37,13 +38,15 @@ if (preg_match('#/?([a-z0-9-]+)$#', $url, $res)) {
       }
     } else {
       if ($pads[0]['is_archived']) {
-        echo '</div> <div class="archived">';
+        echo '</div>';
         $group = sql("SELECT * FROM padman_group WHERE group_alias=?", array($pads[0]['group_alias']))[0];
-      echo "<p>Das Pad <b>$group[group_alias]/".$pads[0]['pad_name']."</b> wurde automatisch archiviert, da es seit ".ARCHIVE_AFTER_MONTHS." Monaten nicht verwendet wurde.</p><p>Wenn Du es bearbeiten möchtest, wende dich bitte mit der Bitte um Wiederherstellung an fss at d120 punkt de.<br>Gib am besten einfach den Link in der Adresszeile an.";
+      echo "<div class=archived><p>Das Pad <b>$group[group_alias]/".$pads[0]['pad_name']."</b> wurde automatisch archiviert, da es seit ".ARCHIVE_AFTER_MONTHS." Monaten nicht verwendet wurde.</p><p>Wenn Du es bearbeiten möchtest, wende dich bitte mit der Bitte um Wiederherstellung an fss <i>at</i> d120 <i>punkt</i> de und gib dabei einfach den Link in der Adresszeile an.</div> <div class=text>";
 
         if (!$pads[0]['password'] || (isset($_POST['password']) && $_POST['password'] == $pads[0]['password'])) {
           $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($pads[0]['pad_name']).".html";
-          echo '<hr>'.file_get_contents($fn);
+          $cont=file_get_contents($fn);
+          $cont = str_replace("<a href=\"", "<a target=\"_blank\" href=\"", $cont);
+          echo "\n\n".$cont;
         } else {
           if (isset($_POST["password"])) echo "Falsch!";
           echo "<h2>Passwort zum Betrachten eingeben:</h2><form action='index.php?lnk=".$pads[0]["shortlink"]."&id=".$pads[0]["id"]."' method='post'><input type='password' name='password'> <input type='submit' value='ok'></form>";

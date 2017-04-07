@@ -86,6 +86,12 @@ function dump_pad_to_file($padID, $padname, $group) {
   @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
   file_put_contents($fn, $result->text);
 }
+function get_archived_pad_content($pad) {
+  $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($pads[0]['pad_name']).".html";
+  $cont = file_get_contents($fn);
+  $cont = str_replace("<a href=\"", "<a target=\"_blank\" href=\"", $cont);
+
+}
 function refresh_group($group_alias) {
   global $db;
   $tags = array();
