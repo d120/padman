@@ -101,7 +101,7 @@ for(; $indent > 1; $indent--) {
 
 <?php if ($allow_pad_create): ?>
 		<div class="form-group-sm">
-		     <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name" pattern="^[a-zA-Z0-9._-]+$">
+		     <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name" pattern="^[a-zA-Z0-9._-]+$" required>
 		   <button type="submit" class="btn btn-sm btn-success" name="createPadinGroup">Pad erstellen</button>
 		</div>
 		 </form>
