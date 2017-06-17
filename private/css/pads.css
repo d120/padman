@@ -63,6 +63,7 @@ background: -moz-linear-gradient(top, #e2e2e2 0%, #dbdbdb 50%, #d1d1d1 51%, #fef
   .navbar .nav>li>a { padding-left: 4px; padding-right: 4px; }
 }
 
+.navbar {z-index:1;}
 #pad_passw:invalid { outline:2px solid red;color:red; }
 
 
