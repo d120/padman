@@ -29,8 +29,8 @@
 <?php load_view("extra_header", array()); ?>
 <div class="top_colorbar" style="background-color: <?= HEADER_ACCENT_COLOR ?>;"></div>
 
-  <img src="<?= HEADER_LOGO_URL ?>" class="top_logo">
-  <h1 style="font-weight:normal; padding: 15px 0 30px;"><?= HEADER_H1 ?></h1>
+  <img src="<?= HEADER_LOGO_URL ?>" class="top_logo hidden-xs">
+  <h1 style="" class="top_headline hidden-xs"><?= HEADER_H1 ?></h1>
 <div style="height:65px">
 <nav class="navbar navbar-default" role="navigation">
     <div class="navbar-header">
@@ -40,6 +40,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
+      <a class="navbar-brand visible-xs-block" href="#"><?= HEADER_H1 ?></a>
     </div>
 
     <div class="collapse navbar-collapse" id="grouplist-navbar">
@@ -101,7 +102,10 @@ for(; $indent > 1; $indent--) {
 
 <?php if ($allow_pad_create): ?>
 		<div class="form-group-sm">
-		     <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name" pattern="^[a-zA-Z0-9._-]+$" required>
+         <input type="text" class="form-control create_pad_name" placeholder="" name="pad_name" 
+              pattern="^[a-zA-Z0-9._-]+$" required
+              oninvalid="this.setCustomValidity('Der Name darf nur aus Buchstaben, Ziffern, Punkten, Binde- und Unterstrichen bestehen')"
+              oninput="setCustomValidity('')">
 		   <button type="submit" class="btn btn-sm btn-success" name="createPadinGroup">Pad erstellen</button>
 		</div>
 		 </form>

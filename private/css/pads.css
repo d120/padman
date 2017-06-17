@@ -2,7 +2,7 @@
 .loader { background: url(loading.gif) no-repeat center center; height: 200px; }
 .top_logo { position:absolute; right: 20px; top: 5px; z-index: 100; }
 .top_colorbar { height: 8px; }
-
+.top_headline { font-weight:normal; padding: 15px 0 30px; }
 #taglist span { cursor: pointer; }
 
 #grouplist-navbar li.ui-state-hover { outline: 1px solid green; }
