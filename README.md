@@ -118,6 +118,13 @@ Then you could set up these group_mappers:
 | group4      | secretgroups  |
 
 
+## Search function
+
+
+* `&` search for groups, e.g. `&mygroup`
+* `#` search for tags, e.g. `#mytag`
+* `!` negation, e.g. `!#notthistag`
+
 ## Links
 
 * [etherpad-lite](https://github.com/ether/etherpad-lite/)
