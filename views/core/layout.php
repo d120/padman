@@ -159,12 +159,12 @@ for(; $indent > 1; $indent--) {
 	  </div>
 	</div>
       </div>
-      <div class="modal-body rename">
+      <div class="modal-body rename"><form id="#form_rename_pad">
         Gib einen neuen Namen für das Pad ein:<br>
-	<input type="text" id="rename_pad" class="form-control" pattern="^[a-zA-Z0-9._-]+$"><br><br>
+	<input type="text" id="rename_pad" class="form-control" pattern="^[a-zA-Z0-9._-]+$" required><br><br>
 	Falls du das Pad verschieben möchtest, wähle die neue Kategorie aus:<br>
 	<select id="rename_group" class="form-control"></select>
-      </div>
+      </form></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="confirm_rename">Umbenennen</button>
         <button type="button" data-dismiss="modal" class="btn btn-default">Abbrechen</button>

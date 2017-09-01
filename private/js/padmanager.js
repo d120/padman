@@ -181,7 +181,10 @@ function PadManager() {
     $dlg.modal("show");
   });
   $("#confirm_rename").click(function() {
-    renamePad(currentEditPadID, $("#rename_group").val(), $("#rename_pad").val());
+    if ($("#form_rename_pad")[0].checkValidity())
+      renamePad(currentEditPadID, $("#rename_group").val(), $("#rename_pad").val());
+    else
+      alert("Bitte einen gültigen neuen Pad-Namen eingeben!");
   });
   function renamePad(oldID, newGroupAlias, newPadName) {
     if (!newGroupAlias) throw ("new Group Alias must not be empty");
