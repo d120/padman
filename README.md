@@ -32,13 +32,13 @@ location / {
 And for Apache:
 
 ```
-Alias /padman /var/www/intern/padman/private
-Alias /pp /var/www/intern/padman/public
+Alias /padman /var/www/padman/private
+Alias /pp /var/www/padman/public
 
-<Directory /var/www/intern/padman/private>
+<Directory /var/www/padman/private>
 AuthType Basic
 AuthName "Padman"
-AuthUserFile /path/to/the/pad/.htpasswd
+AuthUserFile /var/www/padman/.htpasswd
 require valid-user
 
 RewriteEngine On
@@ -47,7 +47,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ /padman/index.php?group=$1 [L]
 
 </Directory>
-<Directory /var/www/intern/padman/public>
+<Directory /var/www/padman/public>
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -68,23 +68,24 @@ prefixed `padman_`). Import the file `install.sql` into the database:
 
     mysql MY_DATABASE < install.sql
 
+To create new groups, use the padmanctl.php command line tool:
 
-Edit the table `padman_group` with a MySQL administration tool of your choice and create
-a row for every group. You need to fill in the columns as described below:
+    php padmanctl.php -N -a <group_alias> -t <menu_title> -m <group_mapper> -p <position>
+
+You need to fill in the parameters as described below:
 
 | Column      | Description                                           |
 |-------------|-------------------------------------------------------|
-| id          | (automatically generated index)                       |
 | group_alias | A short name for the group. Visible in the URL. Must only consist of letters, numbers, underscores. Difficult to change.  |
 | menu_title  | The menu path for the group. Create sub-menus by using slashes (e.g. menu_title = "Main group/Sub group/Subsubgroup"). Can be changed any time. |
-| position    | The menu will be sorted by this column. |
 | group_mapper | Internal group name for etherpad-lite. Not visible to the user. Many groups can share the same group_mapper. See the section "Group Sessions" below. |
-| group_id    | (leave blank, will be auto generated later)            |
-| tags        | (leave blank, will be auto generated later)            |
+| position    | The menu will be sorted by this column. |
 
-Afterwards, go to the padman folder and run the below command:
+If you modify the groups manually in the MySQL database, go to the padman folder and run the below command to rehash the group database:
 
-    php update_groups.php --update
+    php padmanctl.php -R
+
+More commands of the padmanctl.php tool can be found by calling `php padmanctl.php -h`.
 
 If this does not work, you probably did not correctly fill in the API_KEY and API_URL fields in  config.inc.php,
 or your etherpad-lite is not running.
