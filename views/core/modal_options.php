@@ -21,7 +21,7 @@
         <div class="form-group form-inline ">
           <p>Passwort</p>
         
-          <input type="text" id="pad_passw" class="form-control input-lgxx" style="width:200px;"> 
+          <input type="text" id="pad_passw" class="form-control input-lgxx" style="width:200px;" pattern="[A-Za-z0-9_.-]*"> 
             <button class="btn btn-success btn-lgxx" id="passw_store" title="Passwort übernehmen"><i class="glyphicon glyphicon-ok"></i></button>
             <button class="btn btn-default btn-lgxx" id="passw_clear" title="Passwortschutz ausschalten">aus</button>
         </div>
