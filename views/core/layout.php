@@ -83,7 +83,7 @@ for(; $indent > 1; $indent--) {
       <?php if (ALLOW_SEARCH): ?>
       <form class="navbar-form navbar-right" role="search" action="<?= SELF_URL?>" method="get">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" style="width: 150px;" id="searchBox" autocomplete="off">
+          <input type="text" class="form-control" placeholder="Search" name="q" style="width: 150px;" maxlength="60" id="searchBox" autocomplete="off">
         </div>
       </form>
       <?php endif; ?>
@@ -159,9 +159,9 @@ for(; $indent > 1; $indent--) {
 	  </div>
 	</div>
       </div>
-      <div class="modal-body rename"><form id="#form_rename_pad">
+      <div class="modal-body rename"><form id="form_rename_pad">
         Gib einen neuen Namen für das Pad ein:<br>
-	<input type="text" id="rename_pad" class="form-control" pattern="^[a-zA-Z0-9._-]+$" required><br><br>
+	<input type="text" id="rename_pad" class="form-control" pattern="^[a-zA-Z0-9._-]+$" required maxlength=60><br><br>
 	Falls du das Pad verschieben möchtest, wähle die neue Kategorie aus:<br>
 	<select id="rename_group" class="form-control"></select>
       </form></div>

@@ -1,6 +1,8 @@
 <?php
 $verbose = false;
 if (isset($argv[1]) && $argv[1]=="-v") $verbose=true;
+$archiveThisPad = null;
+if (isset($argv[1]) && $argv[1]=="-A") $archiveThisPad=$argv[2];
 
 include "init.php";
 
@@ -29,7 +31,7 @@ foreach($groups as $group) {
       $accessLevel = $tmpPublic->publicStatus ? 1 : 0;
       if($verbose)echo "   $timestamp    $accessLevel\n";
       dump_pad_to_file($padID, $pad['pad_name'], $group);
-      if($archive_before && $timestamp && ($timestamp < $archive_before)) {
+      if(($archive_before && $timestamp && ($timestamp < $archive_before)) || $archiveThisPad === $padID) {
         echo "Archiving the pad $padID  $pad[pad_name] $group[group_alias] \n";
         $ok=$instance->deletePad($padID);
         echo "deletePad($padID);\n";

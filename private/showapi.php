@@ -101,6 +101,7 @@ if (isset($_POST['rename']) && isset($_POST['pad_id']) && isset($_POST['new_grou
   $newName = $_POST['rename'];
   $new_group = sql("SELECT * FROM padman_group WHERE group_alias=?", array($_POST["new_group"]))[0];
   try {
+    if (strlen($new_group['group_alias'].'_'.$newName) > 50) throw new Exception("Pad name too long");
     $oldId = ep_pad_id($pad); $newId = $new_group['group_id'].'$'.$new_group['group_alias'].'_'.$newName;
     #var_dump($oldId, $newId);
     // dangerous stuff going on here...
@@ -150,6 +151,7 @@ if (isset($_POST['createPadinGroup'])) {
   }
 
   try {
+    if (strlen($group['group_alias'].'_'.$padname) > 50) throw new Exception("Pad name too long");
     $db->prepare('INSERT INTO padman_pad_cache (group_mapper, group_id, group_alias, pad_name, last_edited) VALUES (?,?,?,?,NOW())')
        ->execute(array('', $group["group_id"], $group["group_alias"], $padname));
     $pad = get_pad_by_id($db->lastInsertId());

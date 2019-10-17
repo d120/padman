@@ -85,6 +85,7 @@ if (isset($opt['L'])) {
 function list_groups() {
 global $verbose, $instance, $db;
   $groups = sql("select id, menu_title, group_alias, group_mapper, position, tags from padman_group order by position;", []);
+  printf("% 3s  % -20s % -40s %05s %s\n", "id", "group_mapper", "group_alias", "position", "menu_title");
   foreach($groups as $d) {
     printf("% 3d  % -20s % -40s %05d %s\n", $d["id"], $d["group_mapper"], $d["group_alias"], $d["position"], $d["menu_title"]);
   }

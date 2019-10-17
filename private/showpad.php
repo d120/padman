@@ -23,17 +23,19 @@ if(!$instance) exit;
   //cache content
   //note: this does also serve as a check whether this pad does really exist in etherpad lite
   try {
-    dump_pad_to_file($padID, $padname, $group);
+    $htmlcode=dump_pad_to_file($padID, $padname, $group);
   } catch(Exception $ex) {
     header("HTTP/1.1 500 Internal Server Error");
     if ($pad["is_archived"]) {
       $errmsg = "Das Pad <b>$group[group_alias]/$padname</b> wurde automatisch archiviert, da es seit ".ARCHIVE_AFTER_MONTHS." Monaten nicht verwendet wurde.<br>Du kannst es jederzeit ohne seine History einfach wiederherstellen.<br><br>
       <form action='?' method='post'><input type='submit' value='Pad wiederherstellen' class='btn btn-success btn-large'><input type='hidden' name='restore_archived_pad' value='$pad[id]'></form><br>";
     } else {
-      $errmsg = "Das Pad $group[group_alias]/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br>";
+      $errmsg = "Das Pad $group[group_alias]/$padname ist zur Zeit nicht verfügbar, da es ein Problem mit Etherpad Lite gibt.<br><br><small><i>Pad ID: $padID &bull; Error message: ".$ex->getMessage()."</i>";
     }
     $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($padname).".html";
-    load_view("error_layout", array("content" => $errmsg."<b>Letzter Inhalt:</b><br><br><div class=well>".file_get_contents($fn)."</div>"));
+    if(is_file($fn)) $errmsg.="<b>Letzter Inhalt:</b><br><br><div class=well>".@file_get_contents($fn)."</div>";
+    load_view("error_layout", array("content" => $errmsg));
+    echo "<!-- ".$ex."-->";
     return;
   }
 

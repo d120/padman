@@ -7,7 +7,7 @@ try {
   die("<h2>Eile mit Weile - Etherpad ist zur Zeit nicht erreichbar</h2>");
 }
 
-// $sessions = $instance->listSessionsOfAuthor($authorID);
+ $sessions = $instance->listSessionsOfAuthor($authorID);
 
 $edited = $instance->listPadsOfAuthor($authorID);
 $edited_pads = array();
