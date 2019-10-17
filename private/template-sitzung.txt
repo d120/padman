@@ -1,47 +1,39 @@
-<table class="table" style="max-width: 300px; float: right; margin: 1rem 0 1rem 1rem; border: 1px solid #ddd">
+<table class="table" style="max-width: 300px; float: right; margin: 0 0 1rem 1rem; border: 1px solid #ddd">
   <thead>
     <tr><th colspan="2" class="text-center">Protokoll</th></tr>
   </thead>
   <tbody>
     <tr><td colspan="2" class="text-center">Fachschaftssitzung</td></tr>
     <tr><td>Datum</td><td class="text-right">{{heute}}</td></tr>
-    <tr><td>Zeit</td><td class="text-right">18:00 - HH:mm</td></tr>
-    <tr><td>Protokollant*in</td><td class="text-right">XXX</td></tr>
-    <tr><td>Redeleitung</td><td class="text-right">XXX</td></tr>
-    <tr><td>Anwesende</td><td class="text-right">XXX</td></tr>
-    <tr><td>Anwesende online:</td><td class="text-right">XXX</td></tr>
+    <tr><td>Zeit</td><td class="text-right">18:00 - hh:mm</td></tr>
+    <tr><td>Protokollant*in</td><td class="text-right"></td></tr>
+    <tr><td>Redeleitung</td><td class="text-right"></td></tr>
+    <tr><td>Anwesende</td><td class="text-right"></td></tr>
+    <tr><td>Anwesende online:</td><td class="text-right"></td></tr>
   </tbody>
 </table>
 
-### Post
 
+### Post
 
 ### E-Mails
 
-
 ### Mitteilungen
-
 
 ### Termine
 
-
 ### Rückblick
-
 
 ### Unterausschüsse & Gremien
 
-
+---
 ### Aufgaben
 
-
+---
 ### TOPs
 
-
-
+---
 ### Sonstiges
-
-
-
 
 <!--
 
