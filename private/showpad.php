@@ -46,6 +46,7 @@ if(!$instance) exit;
     $shortlink_pads = sql("SELECT * FROM padman_pad_cache WHERE shortlink = ? ORDER BY pad_name", array($pad['shortlink']));
   } else{
     $icon_html = '<span class="glyphicon glyphicon-home"></span> '; $public="false"; $tags="";
+    $shortlink_pads = array();
   }
 
     echo '</div>';
