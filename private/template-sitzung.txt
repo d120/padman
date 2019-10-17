@@ -1,36 +1,44 @@
-{{Vorlage:Protokoll          |Gremium=Fachschaftssitzung
-|Datum={{heute}}        |Zeit=18:00 - 
-|Protokollant=                  |Redeleitung=
-|Anwesende=
-online: 
-}}
+<table class="table" style="max-width: 300px; float: right; margin: 1rem 0 1rem 1rem; border: 1px solid #ddd">
+  <thead>
+    <tr><th colspan="2" class="text-center">Protokoll</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="2" class="text-center">Fachschaftssitzung</td></tr>
+    <tr><td>Datum</td><td class="text-right">{{heute}}</td></tr>
+    <tr><td>Zeit</td><td class="text-right">18:00 - HH:mm</td></tr>
+    <tr><td>Protokollant*in</td><td class="text-right">XXX</td></tr>
+    <tr><td>Redeleitung</td><td class="text-right">XXX</td></tr>
+    <tr><td>Anwesende</td><td class="text-right">XXX</td></tr>
+    <tr><td>Anwesende online:</td><td class="text-right">XXX</td></tr>
+  </tbody>
+</table>
 
-== Post ==
-
-
-== Emails ==
-
-
-== Mitteilungen ==
-
-
-== Termine ==
-
-
-== Rückblick ==
+### Post
 
 
-== Unterausschüsse & Gremien ==
+### E-Mails
 
 
-== Aufgaben ==
+### Mitteilungen
 
 
-== TOPs ==
+### Termine
+
+
+### Rückblick
+
+
+### Unterausschüsse & Gremien
+
+
+### Aufgaben
+
+
+### TOPs
 
 
 
-== Sonstiges ==
+### Sonstiges
 
 
 
@@ -39,12 +47,46 @@ online:
 
 Vorlagen zum Raubkopieren:
 
-{{Vorlage:Meinungsbild
-|Frage=  
-|ja=         | nein=          | enthaltungen=        }}
+<table class="table" style="border: 1px solid #ddd;">
+  <thead>
+    <tr><th colspan="3" class="text-center">Meinungsbild</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="3"><i>
+      Was wollen wir tun?
+    </i></td></tr>
+    <tr>
+      <th class="text-center">Ja</th>
+      <th class="text-center">Nein</th>
+      <th class="text-center">Enthaltung</th>
+    </tr>
+    <tr>
+      <td class="text-center">X</td>
+      <td class="text-center">X</td>
+      <td class="text-center">X</td>
+    </tr>
+  </tbody>
+</table>
 
-{{Vorlage:Meinungsbild          |titel=Beschluss 
-|Frage=  
-|ja=         | nein=          | enthaltungen=        }}
+<table class="table" style="border: 1px solid #ddd;">
+  <thead>
+    <tr><th colspan="3" class="text-center">Beschluss</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="3"><i>
+      Was wollen wir tun?
+    </i></td></tr>
+    <tr>
+      <th class="text-center">Ja</th>
+      <th class="text-center">Nein</th>
+      <th class="text-center">Enthaltung</th>
+    </tr>
+    <tr>
+      <td class="text-center">X</td>
+      <td class="text-center">X</td>
+      <td class="text-center">X</td>
+    </tr>
+  </tbody>
+</table>
 
 -->
