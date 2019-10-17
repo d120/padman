@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `padman_pad_cache` (
   `pad_name` varchar(100) NOT NULL DEFAULT '',
   `last_edited` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `password` varchar(100) DEFAULT NULL,
-  `access_level` int(11) NOT NULL,
+  `access_level` int(11) NOT NULL DEFAULT 0,
   `tags` varchar(255) NOT NULL DEFAULT '',
   `shortlink` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),

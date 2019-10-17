@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 chdir(dirname(__FILE__));
-$opt = getopt("vyLGRNCRVa:t:m:p:");
+$opt = getopt("vyLGRNCRDVa:t:m:p:");
 
 $verbose = isset($opt['v']);
 if (!$opt) usage();
