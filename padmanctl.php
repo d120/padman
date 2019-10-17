@@ -71,7 +71,7 @@ if (isset($opt['L'])) {
     echo "Really delete group #$thegroup[id] with title = \"$thegroup[menu_title]\"? [y/N] "; $ok = fgets(STDIN);
     if (trim($ok) != "y") die();
   }
-  sql("DELETE padman_group FROM group_alias=?", [$opt['a']], TRUE);
+  sql("DELETE FROM padman_group FROM group_alias=?", [$opt['a']], TRUE);
 
 } elseif (isset($opt['V'])) {
   system('git --no-pager log -1 --format="(%cr) %h %s"');
