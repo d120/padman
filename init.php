@@ -79,12 +79,13 @@ function dump_pad_to_file($padID, $padname, $group) {
   $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($padname).".html";
   @mkdir(DATA_DIR."/archive"); @mkdir(dirname($fn));
   file_put_contents($fn, $result->html);
-
+  $html=$result->html;
   $result = $instance->getText($padID);
   if(!$result->text) throw new Exception("dump_pad_to_file failed!");
   $fn = DATA_DIR."/index/".urlencode($group["group_alias"])."/".urlencode($padname).".txt";
   @mkdir(DATA_DIR."/index"); @mkdir(dirname($fn));
   file_put_contents($fn, $result->text);
+  return $html;
 }
 function get_archived_pad_content($pad) {
   $fn = DATA_DIR."/archive/".urlencode($group["group_alias"])."/".urlencode($pads[0]['pad_name']).".html";

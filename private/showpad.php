@@ -59,6 +59,7 @@ echo "<meta charset='utf8'><title>$padname - $group[menu_title] - " . HEADER_TIT
     .padlink { display: table-cell; padding: 5px; font-weight: bold; color: #222; background: #fefe00; border-right: 6px solid #fff; }
     .padlink.active { background: #333; color: #eee; }
     </style>
+    <script>window.padID=$pad[id];</script>
     <script src='js/jquery.js'></script>
     <script src='js/bootstrap.min.js'></script>
     <script src='js/padmanager.js'></script>
@@ -84,7 +85,10 @@ echo "<meta charset='utf8'><title>$padname - $group[menu_title] - " . HEADER_TIT
   }
 
   echo "</div>";
-  echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
+  if (isset($_GET["viewonly"]))
+    echo $htmlcode."<br><br><br>";
+  else
+    echo '<iframe id="padview_iframe" src="'.PAD_URL.$padID.'"></iframe>';
   load_view("modal_options", array());
   load_view("modal_export", array("padID"=>$padID, "shortlnk" => $shortlnk, "shortnam" => $pad['shortlink'], "password" => $pad['password']));
   echo '<script> var pm = new PadManager("' . SELF_URL . '", "' . $group["group_alias"] . '"); </script>';

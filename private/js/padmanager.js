@@ -181,7 +181,7 @@ function PadManager() {
     $dlg.modal("show");
   });
   $("#confirm_rename").click(function() {
-    if ($("#form_rename_pad")[0].checkValidity())
+    if ($("#rename_pad")[0].checkValidity())
       renamePad(currentEditPadID, $("#rename_group").val(), $("#rename_pad").val());
     else
       alert("Bitte einen gültigen neuen Pad-Namen eingeben!");
@@ -258,9 +258,10 @@ function PadManager() {
         if (PAD.is_archived==1) q+= ' <span class="label label-warning" title="Archiviert"><small><i class="glyphicon glyphicon-scissors"></i> Archiviert</small></span> ';
         if (PAD.last_edited_formatted)
           q+= '<span class="label label-default ">'+PAD.last_edited_formatted+'</span> ';
-        q+= '</span></td><td width=100><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>\
+        q+= '</span></td><td width=126><button class="btn btn-xs btn-default pad_opts" title="Einstellungen"><i class="glyphicon glyphicon-cog"></i></button>\
            <button class="btn btn-xs btn-default pad_rename" title="Umbenennen"><i class="glyphicon glyphicon-pencil"></i></button>\
           <a href="'+SELF_URL+'?group='+PAD.group_alias+'&show='+PAD.pad_name+'" target="_blank" class="btn btn-xs btn-default open_popup" title="In neuem Fenster öffnen"><i class="glyphicon glyphicon-new-window"></i></a>\
+          <a href="'+SELF_URL+'?group='+PAD.group_alias+'&show='+PAD.pad_name+'&viewonly=" target="_blank" class="btn btn-xs btn-default "><i class="glyphicon glyphicon-eye-open"></i></a>\
           </td></tr>';
       });
       q += "</tbody></table></div>";
