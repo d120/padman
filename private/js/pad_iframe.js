@@ -51,7 +51,7 @@ function call_shell_cmd(cmd) {
 	xhr=new XMLHttpRequest();
 	xhr.open("POST","?api",true);
 	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-	xhr.send(cmd+"="+escape(padID));
+	xhr.send("run_pad_command="+cmd+"&pad_id="+escape(padID));
 	xhr.onreadystatechange=function(e){
 		if(xhr.readyState==3 || xhr.readyState==4){
 			var newtext=xhr.responseText.substring(idx);

@@ -12,7 +12,7 @@
       <span class='glyphicon glyphicon-envelope'></span> Link per Mail senden</a>";
   echo "<a class='btn btn-success btn-block' href='?pad_id=$padID&do=export_wiki' onclick='return export_popup(this.href);' title='Wiki Export'><span class='glyphicon glyphicon-export'></span> Wiki-Export </a>";
   echo "<a class='btn btn-info btn-block' href='?pad_id=$padID&do=export_mdhtml' onclick='return export_popup(this.href);' title='Markdown Export'><span class='glyphicon glyphicon-eye-open'></span> Markdown-Vorschau</a>";
-  echo "<a class='btn btn-info btn-block' href='javascript:' onclick='return call_shell_cmd(\"test_pad\");' title='Markdown Export'><span class='glyphicon glyphicon-eye-open'></span> Test</a>";
+  echo "<a class='btn btn-info btn-block' href='javascript:' onclick='return call_shell_cmd(\"bookstack_export\");' title='Markdown Export'><span class='glyphicon glyphicon-eye-open'></span> Bookstack-Export</a>";
 ?>
 </div>
 

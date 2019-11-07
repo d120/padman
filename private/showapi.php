@@ -139,26 +139,23 @@ if (isset($_POST['restore_archived_pad'])) {
   exit;
 }
 
-if (isset($_POST['test_pad'])) {
+if (isset($_POST['run_pad_command'])) {
   header("Content-Type: text/plain; charset=utf-8");
-  $pad = get_pad_by_id(intval($_POST['test_pad']));
+  $cmd = $pad_commands[$_POST['run_pad_command']];
+  if (!$cmd) die(json_encode(["status" => "invalid command"]));
+  $pad = get_pad_by_id(intval($_POST['pad_id']));
   if (!$pad) die(json_encode(["status" => "not found"]));
-ob_end_flush();
-	$textResponse = $instance->getText(ep_pad_id($pad));
-	$text = $textResponse->text;
-	#$cmd="/usr/bin/python3 ./test.py";
-	#$cmd="ls -lah .;pwd;id;uname -a";
-	#
-	//var_dump($textResponse);
-	$cmd="wc";
-	$handle=proc_open("$cmd 2>&1",[0=> ["pipe","r"], 1=>["pipe","w"]], $pipes);
-	if(!$handle) echo "\nERROR: popen failed\n";
-	fwrite($pipes[0],$text);
-	fclose($pipes[0]);
-	while(!feof($pipes[1])){
-		echo fgets($pipes[1]);flush();
-	}
-	echo "\nExit code: ".proc_close($handle)."\n";
+  ob_end_flush();
+  $textResponse = $instance->getText(ep_pad_id($pad));
+  $text = $textResponse->text;
+  $handle=proc_open("$cmd 2>&1",[0=> ["pipe","r"], 1=>["pipe","w"]], $pipes);
+  if(!$handle) echo "\nERROR: popen failed\n";
+  fwrite($pipes[0],$text);
+  fclose($pipes[0]);
+  while(!feof($pipes[1])){
+    echo fgets($pipes[1]);flush();
+  }
+  echo "\nExit code: ".proc_close($handle)."\n";
   exit;
 }
 
