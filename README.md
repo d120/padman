@@ -137,7 +137,7 @@ Then you could set up these group_mappers:
 
 ## License
 
-Copyright (c) 2014-2016 Max Weller, Johannes Lauinger, Jannik Vieten
+Copyright (c) 2014-2016 Mira Weller, Johannes Lauinger, Jannik Vieten
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
