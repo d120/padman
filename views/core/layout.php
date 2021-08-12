@@ -187,7 +187,7 @@ for(; $indent > 1; $indent--) {
     </script>
 
 <div class="footer container">
-Etherpad-Lite Manager by Max Weller et al  &middot;  <a href="https://github.com/d120/padman">This program is free software</a>
+Etherpad-Lite Manager by Mira Weller et al  &middot;  <a href="https://github.com/d120/padman">This program is free software</a>
 &middot; <a href="https://github.com/d120/padman/issues">Issues</a>
 <br><br> &middot;
 <br><br> &middot;

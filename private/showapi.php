@@ -183,7 +183,6 @@ if (isset($_POST['createPadinGroup'])) {
 
       $starttext = file_get_contents('template-sitzung.txt');
       $starttext = str_replace("{{heute}}", date("d.m.Y"), $starttext);
-      $starttext = "Kurzlink zum Pad: ".SHORTLNK_PREFIX.'si'.date('md')."\nPasswort: $passwd\n\n" . $starttext;
 
       $instance->setText(ep_pad_id($pad), $starttext);
     }

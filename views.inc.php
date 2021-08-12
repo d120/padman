@@ -4,7 +4,6 @@
    * 
    * @package    MVC_Framework
    * @subpackage System
-   * @author     Max Weller <max.weller@teamwiki.net>
    **/
    
   $GLOBALS["globalViewVars"] = array();
