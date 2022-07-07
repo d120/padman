@@ -94,12 +94,6 @@ if (isset($_GET['do']) && $_GET['do'] == 'export_mdhtml') {
   exit;
 }
 
-// Export as wikitext for MediaWiki
-if (isset($_GET['pad_id']) && isset($_GET['do']) && $_GET['do'] == 'export_wiki') {
-  require "showmediawiki.php";
-  exit;
-}
-
 if (isset($_COOKIE["infobox"])) {
   $infoBox = $_COOKIE["infobox"];
   setcookie("infobox", null);
