@@ -18,10 +18,10 @@ if(!$instance) exit;
     }
     $ul += substr_count($d, "<ul");
     $ul -= substr_count($d, "</ul>");
-    $lenbefore = count($d);
+    $lenbefore = strlen($d);
     if ($ul < 0) {echo("\n\nWARNING: INVALID HTML CODE, IGNORING </UL> OUTSIDE LIST \n\n");$ul=0;}
     $d = str_replace(array("<ul class=\"bullet\">","<ul>", "<ul class=\"indent\">", "</ul>", "<li>"), array("","","","",str_repeat("*",$ul)), $d);
-    if ($lenbefore > 0 && count($d) == 0) continue;
+    if ($lenbefore > 0 && strlen($d) == 0) continue;
     echo "$d\n";
   }
   //echo '<textarea rows=20 cols=100>'.htmlspecialchars($txt).'</textarea>';
