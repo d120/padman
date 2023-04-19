@@ -33,7 +33,15 @@ online:
 
 Vorlagen zum Raubkopieren:
 
-[beschluss text='Was wollen wir tun?', ja=0, nein=0, enthaltung=0]
-[meinungsbild text='Was wollen wir tun?', ja=0, nein=0, enthaltung=0]
+Beschlüsse
+[beschluss text='Wir beschließen, dass [Beschluss].', ja=0, nein=0, enthaltung=0]
+[beschluss text='Wir beschließen die Anschaffung [Artikel Gegenstand] mit einem Budget von maximal [Kosten]. Verantwortlich für die Anschaffung ist [Person].', ja=0, nein=0, enthaltung=0]
+[beschluss text='Wir beschließen, dass [Vorname Nachname] auf die Mailingliste fs@ aufgenommen wird.', ja=0, nein=0, enthaltung=0]
+[beschluss text='Wir beschließen, dass [Vorname Nachname] in [Gruppe] aufgenommen wird.', ja=0, nein=0, enthaltung=0]
+[beschluss text='Wir beschließen, dass [Namen] bis auf weiteres [Event leiten] und somit in die entsprechende Gruppe aufgenommen werden.', ja=0, nein=0, enthaltung=0]
+[beschluss text='Wir beschließen, dass die Mitgliederschaft in [Gruppenname] zu folgende Rechten beinhaltet: [Liste der Rechte].', ja=0, nein=0, enthaltung=0]
+
+Meinungsbild
+[meinungsbild text='Wir wollen, dass [Wille].', ja=0, nein=0, enthaltung=0]
 
 -->
