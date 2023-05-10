@@ -1,5 +1,5 @@
 ---
-datum:{{heute}}
+datum: {{heute}}
 zeit: 18:00 - 
 redeleitung:
 protokoll:
