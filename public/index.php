@@ -3,7 +3,7 @@ ini_set("display_errors","on");
 include "../init.php";
 
 if (isset($_SERVER["REDIRECT_STATUS"]) && $_SERVER["REDIRECT_STATUS"] == "404") {
-  $url = $_SERVER["REDIRECT_SCRIPT_URL"];
+  $url = array_key_exists("REDIRECT_SCRIPT_URL", $_SERVER) ? $_SERVER["REDIRECT_SCRIPT_URL"] : $_SERVER["REDIRECT_URL"];
 }
 if (isset($_GET["lnk"])) $url = $_GET["lnk"];
 
