@@ -6,15 +6,13 @@ protokoll:
 anwesende:
 online:
 ---
-### Post
+### Rückblick
 
-### E-Mails
+### E-Mails und Post
 
 ### Mitteilungen
 
 ### Termine
-
-### Rückblick
 
 ### Unterausschüsse & Gremien
 
